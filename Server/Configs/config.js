@@ -14,7 +14,7 @@ module.exports = {
         },
         level: "debug"
     }),
-  
+    secretkey: '',  
     database: {
         host: process.env.DB_HOSTNAME || 'localhost',
         user: process.env.DB_USERNAME || 'root',

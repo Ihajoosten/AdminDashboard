@@ -1,27 +1,25 @@
 
 // required libraries
-const logger = require('./Configs/config').logger;
 const express = require('express');
 const app = express();
+
+const logger = require('./Configs/config').logger;
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const favicon = require('serve-favicon');
 const port = process.env.PORT || 247;
 
 
 // routes
 const AuthenticationRoutes = require('./Routes/authentication.routes');
 
+// setting up routes
+app.use('/api/auth', AuthenticationRoutes);
 
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true }));
-app.use(favicon('favicon.ico'));
 app.use(express.static('static'));
-
-// setting up routes
-app.use('/api/auth', AuthenticationRoutes);
 
 
 // Handle 404's -> Not found
