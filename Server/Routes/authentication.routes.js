@@ -1,9 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const secretkey = require('../Configs/config').secretkey;
-const database = require('../Configs/database');
 const auth = require('../Controllers/authentication.controllers');
 
 
@@ -23,6 +19,6 @@ router.get('/validateToken', async(req, res) => {
     
 });
 
-router.get('/get-user/:id', auth.getUserById);
+router.get('/get-user/:id', auth.validateToken, auth.getUserById);
 
 module.exports = router;

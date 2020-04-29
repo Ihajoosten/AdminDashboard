@@ -1,3 +1,5 @@
+const secret = 'AdminDashboardKey';
+
 module.exports = {
     logger: require("tracer").colorConsole({
   
@@ -12,7 +14,7 @@ module.exports = {
             data.title = data.title.toUpperCase();
         }
     }),
-    secretkey: '',
+    secretkey: secret,
     databaseConfig: { 
         host: process.env.DB_HOSTNAME || '127.0.0.1', 
         user: process.env.DB_USERNAME || 'root', 

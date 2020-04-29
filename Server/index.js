@@ -1,7 +1,7 @@
 // required libraries
 const express = require('express');
 const app = express();
-
+const morgan = require("morgan");
 const logger = require('./Configs/config').logger;
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -17,7 +17,8 @@ app.use('/api/auth', AuthenticationRoutes);
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors());
+app.use(morgan("dev"));
 app.use(express.static('static'));
 
 
