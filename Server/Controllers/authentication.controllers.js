@@ -30,7 +30,6 @@ module.exports = {
 
             if (payload.user.username && payload.user.id) {
                 req.userId = payload.user.id;
-                req.username = payload.user.username;
                 req.token = token;
                 next();
             } else {
@@ -38,5 +37,33 @@ module.exports = {
                 next({ message: 'Missing user id', code: 404 });
             }
         });
-    }
+    },
+    generateJWT: user => {
+        const tokenData = { username: user.name, id: user.id };
+        return jwt.sign({ user: tokenData }, "secret", {
+          algorithm: "HS256",
+          expiresIn: Math.floor(Date.now() / 1000) + ((60 * 60) * 24) // expires in 24 hours
+        });
+      },
+      decodeToken: req => {
+        const token = req.headers["authorization"].replace(/^JWT\s/, "");
+        if (!token) {
+          logger.error("invalid token");
+          return null;
+        }
+        try {
+          const payload = jwt.decode(token);
+          return payload;
+        } catch (error) {
+          logger.error(error);
+          return null;
+        }
+      },
+      requireLogin: (req, res, next) => {
+        const token = decodeToken(req);
+        if (!token) {
+          return res.status(401).json({ message: "You must be logged in." });    
+        }
+            next();
+      }
 };
