@@ -1,54 +1,58 @@
-const Connection = require('tedious').Connection;
-const Request = require('tedious').Request;
-const logger = ('../Configs/config.js').logger;
+const sql = require('mysql');
+const config = require('./config').databaseConfig;
+const logger = require('./config').logger;
 
-const config = {
-    server: 'LAPTOP-6TJLV8PJ',
-    options: {
-        database: 'AdminDashboard'
+module.exports = {
+    executeStatement: (query, inserts, callback) => {
+        logger.debug('Executing executeStatement')
+        const connection = sql.createConnection(config);
+        query = sql.format(query, inserts);
+
+        connection.connect(err => {
+            if (err) logger.error(err.message);
+
+            connection.query(query, (err, result) => {
+                if (err) {
+                    logger.error('error', err.toString());
+                    callback(err, null);
+                    connection.destroy();
+                    return;
+                }
+                if (result) {
+                    callback(null, result);
+                    connection.destroy();
+                    return;
+                }
+            });
+        });
     },
-    authentication: {
-        type: 'default',
-        options: {
-            userName: 'sa',
-            password: 'Kaya1412'
+    handleResponse: (req, err, rows, res) => {
+        logger.debug('Executing handleResponse');
+        if (!handleError(err, rows, res)) {
+            if (req.token) {
+                res.status(200).json({ result: rows, token: req.token });
+            } else {
+                res.status(200).json({ result: rows });
+            }
         }
     }
 };
 
-async function executeStatement(statement, onRow, onComplete) {
-    logger.debug('Connecting...');
-    const connection = new Connection(config);
-    connection.on('connect', (err) => {
-        logger.debug('Connect state');
-        if (err) {
-            logger.debug(err);
-        } else {
-            logger.debug(' == Connected == ');
-            handleStatement(connection, statement, onRow, onComplete);
-        }
-    });
+function handleError(err, rows, res) {
+    logger.debug('Executing handleError check');
+    if (err) {
+        res.status(500).json({
+            status: 500,
+            message: 'Something went wrong in the database'
+        }).end();
+        return true;
+    }
+    else if (!rows[0]) {
+        res.status(204).json({
+            status: 204,
+            message: 'Result OK, but no content!'
+        }).end();
+        return true;
+    }
+    return false;
 }
-
-function handleStatement(connection, statement, onRow, onComplete) {
-    logger.debug('Handling');
-    logger.debug('Statement : ' + statement);
-    let request = new Request(statement, (err) => {
-        if (err) logger.debug(err)
-    });
-
-    logger.debug('Constructed req');
-
-    request.on('row', (columns) => {
-        logger.debug('\n > New Entry => Executing task');
-        onRow(columns);
-    });
-
-    request.on('requestCompleted', function () {
-        onComplete();
-    });
-
-    connection.execSql(request);
-}
-
-module.exports.executeStatement = executeStatement;

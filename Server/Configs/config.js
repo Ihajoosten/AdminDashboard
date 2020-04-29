@@ -1,5 +1,4 @@
 module.exports = {
-
     logger: require("tracer").colorConsole({
   
         format: [  
@@ -9,17 +8,16 @@ module.exports = {
             }
         ],
         dateformat: "HH:MM:ss",
-        preprocess: function (data) {
+        preprocess: (data) => {
             data.title = data.title.toUpperCase();
-        },
-        level: "debug"
+        }
     }),
-    secretkey: '',  
-    database: {
-        host: process.env.DB_HOSTNAME || 'localhost',
-        user: process.env.DB_USERNAME || 'root',
-        password: process.env.DB_PASSWORD || 'admin',
-        database: process.env.DB_DATABASENAME || 'AdminDashboard',
-        multipleStatements: true  
-    }
+    secretkey: '',
+    databaseConfig: { 
+        host: process.env.DB_HOSTNAME || '127.0.0.1', 
+        user: process.env.DB_USERNAME || 'root', 
+        password: process.env.DB_PASSWORD || '', 
+        database: process.env.DB_DATABASENAME || 'AdminDashboard', 
+        multipleStatements: true 
+    } 
 };
