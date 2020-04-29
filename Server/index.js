@@ -11,8 +11,7 @@ const port = process.env.PORT || 247;
 // routes
 const AuthenticationRoutes = require('./Routes/authentication.routes');
 
-// setting up routes
-app.use('/api/auth', AuthenticationRoutes);
+
 
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,6 +20,8 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.static('static'));
 
+// setting up routes
+app.use('/api/auth', AuthenticationRoutes);
 
 // Handle 404's -> Not found
 app.use((req, res) => {
