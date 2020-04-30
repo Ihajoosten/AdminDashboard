@@ -1,14 +1,10 @@
 <template>
-	<div>
-		<h1>Navbar :-></h1>
-	</div>
+	<div></div>
 </template>
 
 <script>
-	export default {
-		name: "Navbar",
-		data() {
-			return {};
-		}
-	};
+	export default {};
 </script>
+
+<style scoped>
+</style>

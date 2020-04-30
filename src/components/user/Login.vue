@@ -1,14 +1,15 @@
 <template>
-	<div>
-		<h1>Loginpage :-></h1>
-	</div>
+    <div>
+        <h1> Login LMAO</h1>
+    </div>
 </template>
 
 <script>
-	export default {
-		name: "Login",
-		data() {
-			return {};
-		}
-	};
+export default {
+    
+}
 </script>
+
+<style scoped>
+
+</style>
