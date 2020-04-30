@@ -89,7 +89,32 @@ module.exports = {
     });
   },
   loginUser: (req, res) => {
+    const body = req.body;
 
+    switch (body) {
+      case body:
+        logger.fatal('empty body');
+        res.status(400).json({ message: 'Bad Request - body was undefined' }).end();
+        break;
+      
+      case (!body.email || body.email === '') && body:
+        logger.fatal('empty email')
+        res.status(400).json({ message: 'Bad Request - email was undefined' }).end();
+        break;
+      
+      case (!body.password || body.password === '') && body:
+        logger.fatal('empty password')
+        res.status(400).json({ message: 'Bad Request - password was undefined' }).end();
+        break;
+    }
+
+    // const query = `SELECT * FROM users WHERE Email = '${req.body.email}' AND Password = '${req.body.password}'`;
+    // database.executeStatement(query, [req.body.email, req.body.password], (err, rows) => {
+    //   if (!rows[0]) res.status(404).json({ Message: 'User not found - Invalid login attempt' })
+    //   if (rows[0]) {
+
+    //   }
+    // });
   },
   updatePassword: (req, res) => {
 

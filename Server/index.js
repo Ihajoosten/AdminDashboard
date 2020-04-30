@@ -11,8 +11,6 @@ const port = process.env.PORT || 247;
 // routes
 const AuthenticationRoutes = require('./Routes/authentication.routes');
 
-
-
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

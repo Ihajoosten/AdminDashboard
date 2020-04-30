@@ -41,14 +41,14 @@ module.exports = {
 function handleError(err, rows, res) {
     logger.debug('Executing handleError check');
     if (err) {
-        res.status(500).json({
+        res.status(500).send({
             status: 500,
             message: 'Something went wrong in the database'
         }).end();
         return true;
     }
-    else if (!rows[0]) {
-        res.status(204).json({
+    else if (rows[0]) {
+        res.status(204).send({
             status: 204,
             message: 'Result OK, but no content!'
         }).end();
