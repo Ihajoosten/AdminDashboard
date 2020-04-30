@@ -2,6 +2,7 @@ const database = require('../Configs/database');
 const logger = require('../Configs/config').logger;
 const jwt = require('jsonwebtoken');
 const secret = require('../Configs/config').secretkey;
+const bcrypt = require('bcryptjs');
 const User = require('../Models/user.models');
 
 module.exports = {
@@ -66,55 +67,80 @@ module.exports = {
     }
     next();
   },
-  registerUser: (req, res) => {
+  registerUser: async (req, res) => {
     let newUser = new User();
+    const lookupEmail = `SELECT Email FROM users WHERE Email = '${req.body.email}'`;
 
-    newUser.firstname = req.body.firstname;
-    newUser.lastname = req.body.lastname;
-    newUser.email = req.body.email;
-    newUser.birthday = req.body.birthday;
-    newUser.phone = req.body.phone;
-    newUser.password = req.body.password;
+    database.executeStatement(lookupEmail, [req.body.email], (err, rows) => {
+      if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+      if (rows[0]) { res.status(409).json({ Message: 'Email already taken!' }).end(); return; }
 
-    const query = `INSERT INTO users VALUES('',
-    '${newUser.firstname}',
-    '${newUser.lastname}',
-    '${newUser.email}',
-    '${newUser.birthday}',
-    '${newUser.phone}',
-    '${newUser.password}')`;
+      newUser.firstname = req.body.firstname;
+      newUser.lastname = req.body.lastname;
+      newUser.email = req.body.email;
+      newUser.birthday = req.body.birthday;
+      newUser.phone = req.body.phone;
 
-    database.executeStatement(query, [newUser], (err, rows) => {
-      database.handleResponse(req, err, rows, res);
+      bcrypt.genSalt(10, (err, salt) => {
+        if (err) { res.status(400).json({ Message: 'Unable to generate salt!' }).end(); return; }
+        bcrypt.hash(req.body.password, salt, (err, hash) => {
+          if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
+
+          const query = `INSERT INTO users VALUES('',
+                      '${newUser.firstname}',
+                      '${newUser.lastname}',
+                      '${newUser.email}',
+                      '${newUser.birthday}',
+                      '${newUser.phone}',
+                      '${hash}')`;
+
+          database.executeStatement(query, [newUser], (err, rows) => {
+            database.handleResponse(req, err, rows, res);
+          });
+        });
+      });
     });
   },
   loginUser: (req, res) => {
     const body = req.body;
 
+    // if somethng is undefined return given 400 status
     switch (body) {
-      case body:
-        logger.fatal('empty body');
+      case !body.email && !body.password && body:
+        logger.fatal('Empty body');
         res.status(400).json({ message: 'Bad Request - body was undefined' }).end();
         break;
-      
-      case (!body.email || body.email === '') && body:
-        logger.fatal('empty email')
+
+      case (!body.email && body.email === '') && body:
+        logger.fatal('Empty email')
         res.status(400).json({ message: 'Bad Request - email was undefined' }).end();
         break;
-      
+
       case (!body.password || body.password === '') && body:
-        logger.fatal('empty password')
+        logger.fatal('Empty password')
         res.status(400).json({ message: 'Bad Request - password was undefined' }).end();
         break;
+
+      default:
+        const lookupEmailQuery = `SELECT Email FROM users WHERE Email = '${body.email}'`;
+        const lookupUserQuery = `SELECT * FROM users WHERE Email = '${body.email}' AND Password = '${body.password}'`;
+
+        // lookup if email exists in database
+        database.executeStatement(lookupEmailQuery, [body.email], (err, rows) => {
+          if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+          if (!rows[0]) { res.status(404).json({ Message: 'Email does not exist!' }).end(); return; }
+
+          // lookup if user in database
+          database.executeStatement(lookupUserQuery, [body.password], (err, rows) => {
+            if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+            if (!rows[0]) { res.status(404).json({ Message: 'Password invalid!' }).end(); return; }
+
+            // If user exists then generate JWT and sign it to the user
+            res.status(200).json({ Message: 'Logged in successfully!' })
+          });
+        });
+        break;
     }
-
-    // const query = `SELECT * FROM users WHERE Email = '${req.body.email}' AND Password = '${req.body.password}'`;
-    // database.executeStatement(query, [req.body.email, req.body.password], (err, rows) => {
-    //   if (!rows[0]) res.status(404).json({ Message: 'User not found - Invalid login attempt' })
-    //   if (rows[0]) {
-
-    //   }
-    // });
   },
   updatePassword: (req, res) => {
 
