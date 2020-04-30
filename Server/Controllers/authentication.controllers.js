@@ -155,7 +155,7 @@ module.exports = {
 function generateJWT(user) {
   const tokenData = { Id: user.id, Name: (user.first + ' ' + user.last), Email: user.email };
   return jwt.sign({ user: tokenData }, "secret", {
-    algorithm: "HS256",
+    algorithm: "HS512",
     expiresIn: Math.floor(Date.now() / 1000) + ((60 * 60) * 24) // expires in 24 hours
   });
 }
