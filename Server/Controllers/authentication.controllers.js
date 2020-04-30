@@ -2,7 +2,7 @@ const database = require('../Configs/database');
 const logger = require('../Configs/config').logger;
 const jwt = require('jsonwebtoken');
 const secret = require('../Configs/config').secretkey;
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const User = require('../Models/user.models');
 
 module.exports = {
@@ -37,13 +37,6 @@ module.exports = {
         logger.warn('Validate token failed! No user id');
         next({ message: 'Missing user id', code: 404 });
       }
-    });
-  },
-  generateJWT: user => {
-    const tokenData = { username: user.name, id: user.id };
-    return jwt.sign({ user: tokenData }, "secret", {
-      algorithm: "HS256",
-      expiresIn: Math.floor(Date.now() / 1000) + ((60 * 60) * 24) // expires in 24 hours
     });
   },
   decodeToken: req => {
@@ -81,12 +74,13 @@ module.exports = {
       newUser.birthday = req.body.birthday;
       newUser.phone = req.body.phone;
 
-      bcrypt.genSalt(10, (err, salt) => {
-        if (err) { res.status(400).json({ Message: 'Unable to generate salt!' }).end(); return; }
-        bcrypt.hash(req.body.password, salt, (err, hash) => {
-          if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
+      // bcrypt.genSalt(5, (err, salt) => {
+      //   if (err) { res.status(400).json({ Message: 'Unable to generate salt!' }).end(); return; }
+      bcrypt.hash(req.body.password, 10, function (err, hash) {
+        if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
 
-          const query = `INSERT INTO users VALUES('',
+
+        const query = `INSERT INTO users VALUES('',
                       '${newUser.firstname}',
                       '${newUser.lastname}',
                       '${newUser.email}',
@@ -94,12 +88,12 @@ module.exports = {
                       '${newUser.phone}',
                       '${hash}')`;
 
-          database.executeStatement(query, [newUser], (err, rows) => {
-            database.handleResponse(req, err, rows, res);
-          });
+        database.executeStatement(query, [newUser], (err, rows) => {
+          database.handleResponse(req, err, rows, res);
         });
       });
     });
+    // });
   },
   loginUser: (req, res) => {
     const body = req.body;
@@ -123,7 +117,7 @@ module.exports = {
 
       default:
         const lookupEmailQuery = `SELECT Email FROM users WHERE Email = '${body.email}'`;
-        const lookupUserQuery = `SELECT * FROM users WHERE Email = '${body.email}' AND Password = '${body.password}'`;
+        const lookupUserQuery = `SELECT * FROM users WHERE Email = '${body.email}'`;
 
         // lookup if email exists in database
         database.executeStatement(lookupEmailQuery, [body.email], (err, rows) => {
@@ -131,18 +125,37 @@ module.exports = {
           if (!rows[0]) { res.status(404).json({ Message: 'Email does not exist!' }).end(); return; }
 
           // lookup if user in database
-          database.executeStatement(lookupUserQuery, [body.password], (err, rows) => {
+          database.executeStatement(lookupUserQuery, [body.email], (err, rows) => {
             if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
-            if (!rows[0]) { res.status(404).json({ Message: 'Password invalid!' }).end(); return; }
-
-            // If user exists then generate JWT and sign it to the user
-            res.status(200).json({ Message: 'Logged in successfully!' })
+            if (rows) {
+              bcrypt.compare(req.body.password, rows[0].Password, (err, result) => {
+                if (err) { res.status(500).json('Error: ' + err.toString()).end(); return; }
+                if (result) {
+                  let user = {
+                    id: rows[0].Id,
+                    first: rows[0].Firstname,
+                    last: rows[0].Lastname,
+                    email: rows[0].Email
+                  }
+                  const token = generateJWT(user);
+                  res.status(200).json({ Message: 'Logged in successfully!', token: token }).end();
+                }
+              })
+            }
           });
         });
         break;
     }
   },
   updatePassword: (req, res) => {
-
+    // TODO
   }
 };
+
+function generateJWT(user) {
+  const tokenData = { Id: user.id, Name: (user.first + ' ' + user.last), Email: user.email };
+  return jwt.sign({ user: tokenData }, "secret", {
+    algorithm: "HS256",
+    expiresIn: Math.floor(Date.now() / 1000) + ((60 * 60) * 24) // expires in 24 hours
+  });
+}
