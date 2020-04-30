@@ -1,12 +1,12 @@
 <template>
 	<div>
-		<h1>Navbar :-></h1>
+		<h1>NOT FOUND 404</h1>
 	</div>
 </template>
 
 <script>
 	export default {
-		name: "Navbar",
+		name: "NotFound",
 		data() {
 			return {};
 		}
