@@ -44,7 +44,7 @@ describe('Authentication endpoints tests', () => {
         };
 
         const result = await requester.post('/api/auth/login').send(requestBody);
-        
+
         expect(result).to.have.status(200);
         expect(result.body).to.have.property('token');
         expect(result.body).to.have.property('Message');
@@ -58,7 +58,7 @@ describe('Authentication endpoints tests', () => {
         };
 
         const result = await requester.post('/api/auth/login').send(requestBody);
-        
+
         expect(result).to.have.status(404);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('Message');
@@ -72,7 +72,7 @@ describe('Authentication endpoints tests', () => {
         };
 
         const result = await requester.post('/api/auth/login').send(requestBody);
-        
+
         expect(result).to.have.status(404);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('Message');
@@ -86,7 +86,7 @@ describe('Authentication endpoints tests', () => {
         };
 
         const result = await requester.post('/api/auth/login').send(requestBody);
-        
+
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('Message');
@@ -100,7 +100,7 @@ describe('Authentication endpoints tests', () => {
         };
 
         const result = await requester.post('/api/auth/login').send(requestBody);
-        
+
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('Message');
@@ -109,18 +109,41 @@ describe('Authentication endpoints tests', () => {
 
     it('Testing empty body', async () => {
         const requestBody = {
-            
+
         };
 
         const result = await requester.post('/api/auth/login').send(requestBody);
-        
+
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('Message');
         expect(result.body.Message).equal('Bad Request - body was undefined');
     });
 
-    
+    /** Get User By ID */
+    it('Testing with correct ID but no Auth header', async () => {
+
+        const result = await requester.get('/api/auth/get-user/247');
+
+        expect(result).to.have.status(401);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body).to.have.property('code');
+        expect(result.body.Message).equal('No authorization header included');
+        expect(result.body.code).equal(401);
+    });
+
+    it('Testing with correct ID and Auth Header but invalid token', async () => {
+
+        const result = await requester.get('/api/auth/get-user/247').set('Authorization', '50');
+
+        expect(result).to.have.status(401);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body).to.have.property('code');
+        expect(result.body.Message).equal('Not authorized');
+        expect(result.body.code).equal(401);
+    });
 });
 
 /** AUTHORIZATION TESTS - UNIT*/

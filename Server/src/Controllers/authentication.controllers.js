@@ -20,13 +20,13 @@ module.exports = {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       logger.warn('Validate token failed! No authorization header');
-      return res.status(401).json({ message: 'No authorization header included', code: 401 });
+      return res.status(401).json({ Message: 'No authorization header included', code: 401 });
     }
     const token = authHeader.substring(7, authHeader.length);
     jwt.verify(token, secret, err => {
       if (err) {
         logger.warn('Validate token failed! Not Authorized ');
-        return res.status(401).json({ message: 'Not authorized', code: 401 });
+        return res.status(401).json({ Message: 'Not authorized', code: 401 });
       }
       const payload = jwt.decode(token);
 
