@@ -3,6 +3,7 @@ node_modules
 /dist
 /server/.nyc_output
 /server/coverage
+/server/.scannerwork
 
 # local env files
 .env.local
