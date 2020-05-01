@@ -58,9 +58,9 @@ module.exports = {
             Phone = '${body.phone}'
             WHERE Id = '${companyId}'`;
 
-        database.executeStatement(searchQuery, [companyId], (err, rows) => {
-            if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
-            if (!rows[0]) { res.status(404).json({ Message: 'Invalid Company!' }).end(); return; }
+        database.executeStatement(searchQuery, [companyId], (error, result) => {
+            if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+            if (!result[0]) { res.status(404).json({ Message: 'Invalid Company!' }).end(); return; }
 
             database.executeStatement(updateQuery, [body], (err, rows) => {
                 if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
@@ -73,9 +73,9 @@ module.exports = {
         const searchQuery = `SELECT * FROM companies WHERE Id = '${companyId}'`;
         const deleteQuery = `DELETE FROM companies WHERE Id = ' ${companyId}'`;
 
-        database.executeStatement(searchQuery, [companyId], (err, rows) => {
-            if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
-            if (!rows[0]) { res.status(404).json({ Message: 'Invalid Company!' }).end(); return; }
+        database.executeStatement(searchQuery, [companyId], (error, result) => {
+            if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+            if (!result[0]) { res.status(404).json({ Message: 'Invalid Company!' }).end(); return; }
 
             database.executeStatement(deleteQuery, [companyId], (err, rows) => {
                 if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }

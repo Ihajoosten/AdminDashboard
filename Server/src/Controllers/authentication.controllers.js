@@ -51,9 +51,9 @@ module.exports = {
     let newUser = new User();
     const lookupEmail = `SELECT Email FROM users WHERE Email = '${req.body.email}'`;
 
-    database.executeStatement(lookupEmail, [req.body.email], (err, rows) => {
-      if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
-      if (rows[0]) { res.status(409).json({ Message: 'Email already taken!' }).end(); return; }
+    database.executeStatement(lookupEmail, [req.body.email], (error, result) => {
+      if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+      if (result[0]) { res.status(409).json({ Message: 'Email already taken!' }).end(); return; }
 
       newUser.firstname = req.body.firstname;
       newUser.lastname = req.body.lastname;
@@ -73,8 +73,8 @@ module.exports = {
                       '${newUser.phone}',
                       '${hash}')`;
 
-        database.executeStatement(query, [newUser], (err, rows) => {
-          database.handleResponse(req, err, rows, res);
+        database.executeStatement(query, [newUser], (er, rows) => {
+          database.handleResponse(req, er, rows, res);
         });
       });
     });
@@ -104,17 +104,17 @@ module.exports = {
         const lookupUserQuery = `SELECT * FROM users WHERE Email = '${body.email}'`;
 
         // lookup if email exists in database
-        database.executeStatement(lookupEmailQuery, [body.email], (err, rows) => {
-          if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
-          if (!rows[0]) { res.status(404).json({ Message: 'Email does not exist!' }).end(); return; }
+        database.executeStatement(lookupEmailQuery, [body.email], (error, result) => {
+          if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+          if (!result[0]) { res.status(404).json({ Message: 'Email does not exist!' }).end(); return; }
 
           // lookup if user in database
-          database.executeStatement(lookupUserQuery, [body.email], (err, rows) => {
-            if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+          database.executeStatement(lookupUserQuery, [body.email], (er, rows) => {
+            if (er) { res.status(500).json({ Message: 'Error: ' + er.toString() }).end(); return; }
             if (rows) {
-              bcrypt.compare(req.body.password, rows[0].Password, (err, result) => {
+              bcrypt.compare(req.body.password, rows[0].Password, (err, isMatch) => {
                 if (err) { res.status(500).json('Error: ' + err.toString()).end(); return; }
-                if (result) {
+                if (isMatch) {
                   let user = {
                     id: rows[0].Id,
                     first: rows[0].Firstname,
@@ -138,21 +138,26 @@ module.exports = {
     const lookupUserQuery = `SELECT * FROM users WHERE Email = '${email}'`;
 
     logger.log('updatePassword aangeroepen')
-    database.executeStatement(lookupUserQuery, [email], (err, rows) => {
+    database.executeStatement(lookupUserQuery, [email], (error, result) => {
       logger.trace('looking up user')
-      if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
-      if (!rows[0]) { res.status(404).json({ Message: 'Invalid Email!' }).end(); logger.trace('Wrong email sukkel'); return; }
-      if (bcrypt.compareSync(oldPassword, rows[0].Password)) {
-        bcrypt.hash(newPassword, 10, (err, hash) => {
+      if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+
+      if (!result[0]) { res.status(404).json({ Message: 'Invalid Email!' }).end(); logger.trace('Wrong email sukkel'); return; }
+
+      if (bcrypt.compareSync(oldPassword, result[0].Password)) {
+        bcrypt.hash(newPassword, 10, (er, hash) => {
           logger.trace('something went wrong with hashing the password')
-          if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+          if (er) { res.status(500).json({ Message: 'Error: ' + er.toString() }).end(); return; }
           const updatePasswordQuery = `UPDATE users SET Password = '${hash}' WHERE Email = '${email}'`;
 
           database.executeStatement(updatePasswordQuery, [hash], (err, rows) => {
             database.handleResponse(req, err, rows, res);
           });
         });
-      } else res.status(401).json({Message: 'old password is invalid!'}).end(); return;
+      } else {
+        res.status(401).json({ Message: 'old password is invalid!' }).end();
+        return;
+      }
     });
   }
 };

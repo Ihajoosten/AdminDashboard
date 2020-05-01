@@ -5,17 +5,17 @@ const logger = require("../Configs/config").logger;
 const product = require('../Controllers/transaction.controllers');
 
 
-router.post('/add-transaction', async (req, res) => {
+// router.post('/add-transaction', async (req, res) => {
 
-});
+// });
 
-router.post('/get-transaction', async (req, res) => {
+// router.post('/get-transaction', async (req, res) => {
 
-});
+// });
 
-router.patch('/get-transactions', async (req, res) => {
+// router.patch('/get-transactions', async (req, res) => {
 
-});
+// });
 
 /** TODO */
 // router.get('/edit-invoice', async(req, res) => {

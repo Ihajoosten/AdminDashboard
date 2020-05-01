@@ -9,13 +9,14 @@ const devConnection = sql.createConnection(testConfig);
 module.exports = {
     executeStatement: (query, inserts, callback) => {
         logger.debug('Executing executeStatement')
-        var connection;
-        if (process.env.NODE_ENV === 'prod') { connection = sql.createConnection(config); }
+        let connection = sql.createConnection(config);
+
         if (process.env.NODE_ENV === 'dev') { connection = sql.createConnection(testConfig); }
+
         query = sql.format(query, inserts);
 
-        connection.connect(err => {
-            if (err) logger.error(err.message);
+        connection.connect(error => {
+            if (error) logger.error(error.message);
 
             connection.query(query, (err, result) => {
                 if (err) {
