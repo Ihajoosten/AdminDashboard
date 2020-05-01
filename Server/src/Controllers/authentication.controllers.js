@@ -86,17 +86,17 @@ module.exports = {
     switch (body) {
       case !body.email && !body.password && body:
         logger.fatal('Empty body');
-        res.status(400).json({ message: 'Bad Request - body was undefined' }).end();
+        res.status(400).json({ Message: 'Bad Request - body was undefined' }).end();
         break;
 
       case (!body.email && body.email === '') && body:
         logger.fatal('Empty email')
-        res.status(400).json({ message: 'Bad Request - email was undefined' }).end();
+        res.status(400).json({ Message: 'Bad Request - email was undefined' }).end();
         break;
 
       case (!body.password || body.password === '') && body:
         logger.fatal('Empty password')
-        res.status(400).json({ message: 'Bad Request - password was undefined' }).end();
+        res.status(400).json({ Message: 'Bad Request - password was undefined' }).end();
         break;
 
       default:
@@ -123,6 +123,9 @@ module.exports = {
                   }
                   const token = generateJWT(user);
                   res.status(200).json({ Message: 'Logged in successfully!', token: token }).end();
+                } else {
+                  res.status(404).json({ Message: 'Invalid password!' }).end();
+                  return;
                 }
               })
             }

@@ -2,15 +2,15 @@
 const express = require('express');
 const app = express();
 const morgan = require("morgan");
-const logger = require('./Configs/config').logger;
+const logger = require('./src/Configs/config').logger;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const port = process.env.PORT || 247;
 
 
 // routes
-const authRoutes = require('./Routes/authentication.routes');
-const companyRoutes = require('./Routes/company.routes');
+const authRoutes = require('./src/Routes/authentication.routes');
+const companyRoutes = require('./src/Routes/company.routes');
 
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
