@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 const database = require('../Configs/database');
 const logger = require('../Configs/config').logger;
 const jwt = require('jsonwebtoken');
@@ -29,8 +30,8 @@ module.exports = {
       }
       const payload = jwt.decode(token);
 
-      if (payload.user.username && payload.user.id) {
-        req.userId = payload.user.id;
+      if (payload.user.Name && payload.user.Id) {
+        req.userId = payload.user.Id;
         req.token = token;
         next();
       } else {
@@ -38,20 +39,6 @@ module.exports = {
         next({ message: 'Missing user id', code: 404 });
       }
     });
-  },
-  decodeToken: req => {
-    const token = req.headers["authorization"].replace(/^JWT\s/, "");
-    if (!token) {
-      logger.error("invalid token");
-      return null;
-    }
-    try {
-      const payload = jwt.decode(token);
-      return payload;
-    } catch (error) {
-      logger.error(error);
-      return null;
-    }
   },
   requireLogin: (req, res, next) => {
     const token = decodeToken(req);
@@ -74,8 +61,6 @@ module.exports = {
       newUser.birthday = req.body.birthday;
       newUser.phone = req.body.phone;
 
-      // bcrypt.genSalt(5, (err, salt) => {
-      //   if (err) { res.status(400).json({ Message: 'Unable to generate salt!' }).end(); return; }
       bcrypt.hash(req.body.password, 10, function (err, hash) {
         if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
 
@@ -93,7 +78,6 @@ module.exports = {
         });
       });
     });
-    // });
   },
   loginUser: (req, res) => {
     const body = req.body;
@@ -148,14 +132,50 @@ module.exports = {
     }
   },
   updatePassword: (req, res) => {
-    // TODO
+    const email = req.body.email;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+    const lookupUserQuery = `SELECT * FROM users WHERE Email = '${email}'`;
+
+    logger.log('updatePassword aangeroepen')
+    database.executeStatement(lookupUserQuery, [email], (err, rows) => {
+      logger.trace('looking up user')
+      if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+      if (!rows[0]) { res.status(404).json({ Message: 'Invalid Email!' }).end(); logger.trace('Wrong email sukkel'); return; }
+      if (bcrypt.compareSync(oldPassword, rows[0].Password)) {
+        bcrypt.hash(newPassword, 10, (err, hash) => {
+          logger.trace('something went wrong with hashing the password')
+          if (err) { res.status(500).json({ Message: 'Error: ' + err.toString() }).end(); return; }
+          const updatePasswordQuery = `UPDATE users SET Password = '${hash}' WHERE Email = '${email}'`;
+
+          database.executeStatement(updatePasswordQuery, [hash], (err, rows) => {
+            database.handleResponse(req, err, rows, res);
+          });
+        });
+      } else res.status(401).json({Message: 'old password is invalid!'}).end(); return;
+    });
   }
 };
 
 function generateJWT(user) {
   const tokenData = { Id: user.id, Name: (user.first + ' ' + user.last), Email: user.email };
-  return jwt.sign({ user: tokenData }, "secret", {
+  return jwt.sign({ user: tokenData }, secret, {
     algorithm: "HS512",
     expiresIn: Math.floor(Date.now() / 1000) + ((60 * 60) * 24) // expires in 24 hours
   });
+}
+
+function decodeToken(req) {
+  const token = req.headers["authorization"].replace(/^JWT\s/, "");
+  if (!token) {
+    logger.error("invalid token");
+    return null;
+  }
+  try {
+    const payload = jwt.decode(token);
+    return payload;
+  } catch (error) {
+    logger.error(error);
+    return null;
+  }
 }
