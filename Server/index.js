@@ -15,7 +15,7 @@ const companyRoutes = require('./Routes/company.routes');
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 app.use(morgan("dev"));
 app.use(express.static('static'));
 

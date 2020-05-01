@@ -7,4 +7,4 @@ class Transaction {
     }
 }
 
-module.exports = Balance;
+module.exports = Transaction;

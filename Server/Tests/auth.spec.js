@@ -19,7 +19,7 @@ describe('Authentication endpoints tests', () => {
             logger.trace('hashing new password')
             if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
 
-            database.executeStatement(constants.createUserQuery(hash), [hash] ,(err, rows) => {
+            database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
                 if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
                 logger.trace('Created new user')
                 done();
@@ -37,19 +37,19 @@ describe('Authentication endpoints tests', () => {
     })
 
     /** Login tests */
-    it('Testing correct credentials', () => {
+    it('Testing correct credentials', async () => {
         const requestBody = {
             email: 'Test@gmail.com',
             password: 'TestPassword123!'
         };
 
         logger.log('Testing POST Login')
-        const result = requester.post('/api/auth/login').send(requestBody);
-
+        const result = await requester.post('/api/auth/login').send(requestBody);
+        
         expect(result).to.have.status(200);
         expect(result.body).to.have.property('token');
-        expect(result.body).to.have.object('user');
-
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Logged in successfully!');
     });
 });
 

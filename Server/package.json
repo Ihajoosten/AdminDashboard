@@ -4,10 +4,10 @@
   "description": "AdminDashboard back-en API",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "npm start index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "dev": "SET NODE_ENV=dev&&nodemon index",
+    "start": "SET NODE_ENV=prod&&node index",
+    "test": "SET NODE_ENV=dev&&nyc --reporter=lcov mocha --exit \"./{,!(node_modules)/**/}*.spec.js\"  --timeout 10000"
+    },
   "author": "Luc Joosten",
   "license": "ISC",
   "dependencies": {

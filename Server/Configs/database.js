@@ -1,11 +1,17 @@
+/* eslint-disable no-unused-vars */
 const sql = require('mysql');
 const config = require('./config').databaseConfig;
+const testConfig = require('./config').testDBConfig;
 const logger = require('./config').logger;
+const prodConnection = sql.createConnection(config);
+const devConnection = sql.createConnection(testConfig);
 
 module.exports = {
     executeStatement: (query, inserts, callback) => {
         logger.debug('Executing executeStatement')
-        const connection = sql.createConnection(config);
+        var connection;
+        if (process.env.NODE_ENV === 'prod') { connection = sql.createConnection(config); }
+        if (process.env.NODE_ENV === 'dev') { connection = sql.createConnection(testConfig); }
         query = sql.format(query, inserts);
 
         connection.connect(err => {
