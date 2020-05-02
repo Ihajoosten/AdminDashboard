@@ -14,24 +14,19 @@ const jwt = require('jsonwebtoken');
 describe('Authentication endpoints tests', () => {
 
     beforeEach((done) => {
-        logger.trace('Before Each called')
         bcrypt.hash('TestPassword123!', 10, (err, hash) => {
-            logger.trace('hashing new password')
             if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
 
             database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
                 if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
-                logger.trace('Created new user')
                 done();
             });
         });
     });
 
     afterEach((done) => {
-        logger.trace('After Each called')
         database.executeStatement('DELETE FROM users', [''], (err, rows) => {
             if (err) { logger.error('Cleaning the tables failed: ', err.toString()); }
-            logger.trace('Deleted tables')
             done();
         });
     })
@@ -143,6 +138,69 @@ describe('Authentication endpoints tests', () => {
         expect(result.body).to.have.property('code');
         expect(result.body.Message).equal('Not authorized');
         expect(result.body.code).equal(401);
+    });
+
+    it('Testing with correct ID and Auth Header with valid token', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+
+        const signedInUser = await requester.post('/api/auth/login').send(requestBody);
+        const result = await requester.get('/api/auth/get-user/247').set('Authorization', 'Bearer ' + signedInUser.body.token);
+
+        expect(result).to.have.status(200);
+        expect(result.body).to.have.property('result');
+        expect(result.body.result[0].Email).equal('Test@gmail.com');
+        expect(bcrypt.compareSync('TestPassword123!', result.body.result[0].Password)).equal(true);
+    });
+
+    it('Testing with correct ID and Auth Header with valid token', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+
+        const signedInUser = await requester.post('/api/auth/login').send(requestBody);
+        const result = await requester.get('/api/auth/get-user/Invalid').set('Authorization', 'Bearer ' + signedInUser.body.token);
+
+        expect(result).to.have.status(500);
+        expect(result.body).to.have.property('message');
+    });
+
+    /** Register User */
+    it('Testing register user with correct data', async () => {
+        const newUser = {
+            firstname: 'Firstname',
+            lastname: 'Lastname',
+            email: 'NewTest@gmail.com',
+            birthday: '14-12-2000',
+            phone: '0679410987',
+            password: 'TestPassword123!'
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(200);
+        expect(result.body.result).to.have.property('affectedRows');
+        expect(result.body.result.affectedRows).equal(1);
+    });
+
+    it('Testing email already taken', async () => {
+        const newUser = {
+            firstname: 'Firstname',
+            lastname: 'Lastname',
+            email: 'Test@gmail.com',
+            birthday: '14-12-2000',
+            phone: '0679410987',
+            password: 'TestPassword123!'
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(409);
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Email already taken!');
     });
 });
 

@@ -16,16 +16,13 @@ module.exports = {
     });
   },
   validateToken: (req, res, next) => {
-    logger.trace('validateToken aangeroepen');
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      logger.warn('Validate token failed! No authorization header');
       return res.status(401).json({ Message: 'No authorization header included', code: 401 });
     }
     const token = authHeader.substring(7, authHeader.length);
     jwt.verify(token, secret, err => {
       if (err) {
-        logger.warn('Validate token failed! Not Authorized ');
         return res.status(401).json({ Message: 'Not authorized', code: 401 });
       }
       const payload = jwt.decode(token);
@@ -35,7 +32,6 @@ module.exports = {
         req.token = token;
         next();
       } else {
-        logger.warn('Validate token failed! No user id');
         next({ message: 'Missing user id', code: 404 });
       }
     });
@@ -85,17 +81,14 @@ module.exports = {
     // if somethng is undefined return given 400 status
     switch (body) {
       case !body.email && !body.password && body:
-        logger.fatal('Empty body');
         res.status(400).json({ Message: 'Bad Request - body was undefined' }).end();
         break;
 
       case (!body.email && body.email === '') && body:
-        logger.fatal('Empty email')
         res.status(400).json({ Message: 'Bad Request - email was undefined' }).end();
         break;
 
       case (!body.password || body.password === '') && body:
-        logger.fatal('Empty password')
         res.status(400).json({ Message: 'Bad Request - password was undefined' }).end();
         break;
 

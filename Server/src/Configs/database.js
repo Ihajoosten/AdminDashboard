@@ -8,7 +8,6 @@ const devConnection = sql.createConnection(testConfig);
 
 module.exports = {
     executeStatement: (query, inserts, callback) => {
-        logger.debug('Executing executeStatement')
         let connection = sql.createConnection(config);
 
         if (process.env.NODE_ENV === 'dev') { connection = sql.createConnection(testConfig); }
@@ -34,7 +33,6 @@ module.exports = {
         });
     },
     handleResponse: (req, err, rows, res) => {
-        logger.debug('Executing handleResponse');
         if (!handleError(err, rows, res)) {
             if (req.token) {
                 res.status(200).json({ result: rows, token: req.token });
@@ -46,18 +44,10 @@ module.exports = {
 };
 
 function handleError(err, rows, res) {
-    logger.debug('Executing handleError check');
     if (err) {
         res.status(500).send({
             status: 500,
             message: 'Something went wrong in the database'
-        }).end();
-        return true;
-    }
-    else if (rows[0]) {
-        res.status(204).send({
-            status: 204,
-            message: 'Result OK, but no content!'
         }).end();
         return true;
     }
