@@ -155,7 +155,7 @@ describe('Authentication endpoints tests', () => {
         expect(bcrypt.compareSync('TestPassword123!', result.body.result[0].Password)).equal(true);
     });
 
-    it('Testing with correct ID and Auth Header with valid token', async () => {
+    it('Testing error response', async () => {
         const requestBody = {
             email: 'Test@gmail.com',
             password: 'TestPassword123!'
@@ -202,6 +202,99 @@ describe('Authentication endpoints tests', () => {
         expect(result.body).to.have.property('Message');
         expect(result.body.Message).equal('Email already taken!');
     });
+
+    it('Testing undefined firstname', async () => {
+        const newUser = {
+            firstname: ''
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Bad Request - firstname was undefined');
+    });
+
+    it('Testing undefined lastname', async () => {
+        const newUser = {
+            firstname: 'Testing',
+            lastname: ''
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Bad Request - lastname was undefined');
+    });
+
+    it('Testing undefined email', async () => {
+        const newUser = {
+            firstname: 'Testing',
+            lastname: 'TestingToo',
+            email: ''
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Bad Request - email was undefined');
+    });
+
+    it('Testing undefined birthday', async () => {
+        const newUser = {
+            firstname: 'Testing',
+            lastname: 'TestingToo',
+            email: 'TestingThisEmail@gmail.com',
+            birthday: ''
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Bad Request - birthday was undefined');
+    });
+    
+    it('Testing undefined phone', async () => {
+        const newUser = {
+            firstname: 'Testing',
+            lastname: 'TestingToo',
+            email: 'TestingThisEmail@gmail.com',
+            birthday: '14-12-1999',
+            phone: ''
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Bad Request - phone was undefined');
+    });
+    
+    it('Testing undefined password', async () => {
+        const newUser = {
+            firstname: 'Testing',
+            lastname: 'TestingToo',
+            email: 'TestingThisEmail@gmail.com',
+            birthday: '14-12-1999',
+            phone: '112',
+            password: ''
+        }
+
+        const result = await requester.post('/api/auth/register').send(newUser);
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.not.have.property('token');
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Bad Request - password was undefined');
+    });
 });
 
 /** AUTHORIZATION TESTS - UNIT*/
@@ -209,3 +302,5 @@ describe('Authentication endpoints tests', () => {
 /** AUTHENTICATION TESTS - API*/
 
 /** AUTHENTICATION TESTS - API*/
+
+

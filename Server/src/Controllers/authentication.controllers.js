@@ -44,24 +44,59 @@ module.exports = {
     next();
   },
   registerUser: async (req, res) => {
-    let newUser = new User();
-    const lookupEmail = `SELECT Email FROM users WHERE Email = '${req.body.email}'`;
+    const body = req.body;
 
-    database.executeStatement(lookupEmail, [req.body.email], (error, result) => {
-      if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
-      if (result[0]) { res.status(409).json({ Message: 'Email already taken!' }).end(); return; }
+    // if somethng is undefined return given 400 status
+    switch (body) {
+      case !body:
+        res.status(400).json({ Message: 'Bad Request - body was undefined' }).end();
+        break;
 
-      newUser.firstname = req.body.firstname;
-      newUser.lastname = req.body.lastname;
-      newUser.email = req.body.email;
-      newUser.birthday = req.body.birthday;
-      newUser.phone = req.body.phone;
+      case (!body.firstname && body.firstname === '') && body:
+        res.status(400).json({ Message: 'Bad Request - firstname was undefined' }).end();
+        break;
 
-      bcrypt.hash(req.body.password, 10, function (err, hash) {
-        if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
+      case (!body.lastname && body.lastname === '') && body:
+        res.status(400).json({ Message: 'Bad Request - lastname was undefined' }).end();
+        break;
+
+      case (!body.email && body.email === '') && body:
+        res.status(400).json({ Message: 'Bad Request - email was undefined' }).end();
+        break;
+
+      case (!body.birthday && body.birthday === '') && body:
+        res.status(400).json({ Message: 'Bad Request - birthday was undefined' }).end();
+        break;
+
+      case (!body.phone && body.phone === '') && body:
+        res.status(400).json({ Message: 'Bad Request - phone was undefined' }).end();
+        break;
+
+      case (!body.password && body.password === '') && body:
+        res.status(400).json({ Message: 'Bad Request - password was undefined' }).end();
+        break;
+
+      default:
+        let newUser = new User();
+        const lookupEmail = `SELECT Email FROM users WHERE Email = '${req.body.email}'`;
 
 
-        const query = `INSERT INTO users VALUES('',
+
+        database.executeStatement(lookupEmail, [req.body.email], (error, result) => {
+          if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+          if (result[0]) { res.status(409).json({ Message: 'Email already taken!' }).end(); return; }
+
+          newUser.firstname = req.body.firstname;
+          newUser.lastname = req.body.lastname;
+          newUser.email = req.body.email;
+          newUser.birthday = req.body.birthday;
+          newUser.phone = req.body.phone;
+
+          bcrypt.hash(req.body.password, 10, function (err, hash) {
+            if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
+
+
+            const query = `INSERT INTO users VALUES('',
                       '${newUser.firstname}',
                       '${newUser.lastname}',
                       '${newUser.email}',
@@ -69,11 +104,12 @@ module.exports = {
                       '${newUser.phone}',
                       '${hash}')`;
 
-        database.executeStatement(query, [newUser], (er, rows) => {
-          database.handleResponse(req, er, rows, res);
+            database.executeStatement(query, [newUser], (er, rows) => {
+              database.handleResponse(req, er, rows, res);
+            });
+          });
         });
-      });
-    });
+    }
   },
   loginUser: (req, res) => {
     const body = req.body;
