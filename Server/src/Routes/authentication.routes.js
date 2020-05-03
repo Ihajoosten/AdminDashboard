@@ -6,7 +6,7 @@ router.post('/register', auth.registerUser);
 
 router.post('/login', auth.loginUser);
 
-router.post('/reset-password', auth.validateToken, auth.updatePassword);
+router.patch('/reset-password', auth.validateToken, auth.updatePassword);
 
 router.get('/validateToken', auth.validateToken);
 

@@ -9,9 +9,8 @@ const logger = require('../src/Configs/config').logger;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
-/** AUTHENTICATION TESTS - UNIT */
-describe('Authentication endpoints tests', () => {
+/** Login User tests */
+describe('Login User tests', () => {
 
     beforeEach((done) => {
         bcrypt.hash('TestPassword123!', 10, (err, hash) => {
@@ -31,7 +30,6 @@ describe('Authentication endpoints tests', () => {
         });
     })
 
-    /** Login tests */
     it('Testing correct credentials', async () => {
         const requestBody = {
             email: 'Test@gmail.com',
@@ -114,6 +112,29 @@ describe('Authentication endpoints tests', () => {
         expect(result.body).to.have.property('Message');
         expect(result.body.Message).equal('Bad Request - body was undefined');
     });
+});
+
+
+/** Login tests */
+describe('GetUserByID tests', () => {
+
+    beforeEach((done) => {
+        bcrypt.hash('TestPassword123!', 10, (err, hash) => {
+            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
+
+            database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
+                if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
+                done();
+            });
+        });
+    });
+
+    afterEach((done) => {
+        database.executeStatement('DELETE FROM users', [''], (err, rows) => {
+            if (err) { logger.error('Cleaning the tables failed: ', err.toString()); }
+            done();
+        });
+    });
 
     /** Get User By ID */
     it('Testing with correct ID but no Auth header', async () => {
@@ -168,7 +189,30 @@ describe('Authentication endpoints tests', () => {
         expect(result.body).to.have.property('message');
     });
 
-    /** Register User */
+});
+
+
+/** Register user tests */
+describe('Register User tests', () => {
+
+    beforeEach((done) => {
+        bcrypt.hash('TestPassword123!', 10, (err, hash) => {
+            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
+
+            database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
+                if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
+                done();
+            });
+        });
+    });
+
+    afterEach((done) => {
+        database.executeStatement('DELETE FROM users', [''], (err, rows) => {
+            if (err) { logger.error('Cleaning the tables failed: ', err.toString()); }
+            done();
+        });
+    });
+
     it('Testing register user with correct data', async () => {
         const newUser = {
             firstname: 'Firstname',
@@ -260,7 +304,7 @@ describe('Authentication endpoints tests', () => {
         expect(result.body).to.have.property('Message');
         expect(result.body.Message).equal('Bad Request - birthday was undefined');
     });
-    
+
     it('Testing undefined phone', async () => {
         const newUser = {
             firstname: 'Testing',
@@ -277,7 +321,7 @@ describe('Authentication endpoints tests', () => {
         expect(result.body).to.have.property('Message');
         expect(result.body.Message).equal('Bad Request - phone was undefined');
     });
-    
+
     it('Testing undefined password', async () => {
         const newUser = {
             firstname: 'Testing',
@@ -297,10 +341,105 @@ describe('Authentication endpoints tests', () => {
     });
 });
 
-/** AUTHORIZATION TESTS - UNIT*/
 
-/** AUTHENTICATION TESTS - API*/
+/** Update User tests */
+describe('Update User tests', () => {
 
-/** AUTHENTICATION TESTS - API*/
+    beforeEach((done) => {
+        bcrypt.hash('TestPassword123!', 10, (err, hash) => {
+            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
 
+            database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
+                if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
+                done();
+            });
+        });
+    });
 
+    afterEach((done) => {
+        database.executeStatement('DELETE FROM users', [''], (err, rows) => {
+            if (err) { logger.error('Cleaning the tables failed: ', err.toString()); }
+            done();
+        });
+    });
+
+    it('Testing with invalid email', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+
+        const resetPassBody = {
+            email: 'Test@gmail.nl',
+            oldPassword: 'TestPassword123!',
+            newPassword: 'TestingNewPassword123!'
+        };
+
+        const signedInUser = await requester.post('/api/auth/login').send(requestBody);
+        const result = await requester.patch('/api/auth/reset-password').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
+
+        expect(result).to.have.status(401);
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Invalid Email!');
+    });
+
+    it('Testing with invalid url', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+
+        const resetPassBody = {
+            email: 'Test@gmail.nl',
+            oldPassword: 'TestPassword123!',
+            newPassword: 'TestingNewPassword123!'
+        };
+
+        const signedInUser = await requester.post('/api/auth/login').send(requestBody);
+        const result = await requester.patch('/api/auth/reset-password/247').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
+
+        expect(result).to.have.status(404);
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('Not found error: 404');
+    });
+
+    it('Testing with invalid oldPassword', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+
+        const resetPassBody = {
+            email: 'Test@gmail.com',
+            oldPassword: 'TestPassword12asdfasdfsadf3!',
+            newPassword: 'TestingNewPassword123!'
+        };
+
+        const signedInUser = await requester.post('/api/auth/login').send(requestBody);
+        const result = await requester.patch('/api/auth/reset-password').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
+
+        expect(result).to.have.status(401);
+        expect(result.body).to.have.property('Message');
+        expect(result.body.Message).equal('old password is invalid!');
+    });
+
+    it('Testing with valid credentials', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+
+        const resetPassBody = {
+            email: 'Test@gmail.com',
+            oldPassword: 'TestPassword123!',
+            newPassword: 'TestingNewPassword123!'
+        };
+
+        const signedInUser = await requester.post('/api/auth/login').send(requestBody);
+        const result = await requester.patch('/api/auth/reset-password').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
+
+        expect(result).to.have.status(200);
+        expect(result.body).to.have.property('result');
+        expect(result.body).to.have.property('token');
+    });
+});

@@ -27,7 +27,7 @@ app.use('/api/company', companyRoutes);
 app.use((req, res) => {
     logger.debug('User [', req.headers['x-forwarded-for'] || req.connection.remoteAddress,
         '] attempted to connect to ', req.originalUrl, ' and was sent 404 Not Found');
-    res.status(404).send('Not found error: 404');
+    res.status(404).send({ Message: 'Not found error: 404' });
 });
 
 // Handle 500's -> Internal error

@@ -169,16 +169,13 @@ module.exports = {
     const newPassword = req.body.newPassword;
     const lookupUserQuery = `SELECT * FROM users WHERE Email = '${email}'`;
 
-    logger.log('updatePassword aangeroepen')
     database.executeStatement(lookupUserQuery, [email], (error, result) => {
-      logger.trace('looking up user')
       if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
 
-      if (!result[0]) { res.status(404).json({ Message: 'Invalid Email!' }).end(); logger.trace('Wrong email sukkel'); return; }
+      if (!result[0]) { res.status(401).json({ Message: 'Invalid Email!' }).end(); return; }
 
       if (bcrypt.compareSync(oldPassword, result[0].Password)) {
         bcrypt.hash(newPassword, 10, (er, hash) => {
-          logger.trace('something went wrong with hashing the password')
           if (er) { res.status(500).json({ Message: 'Error: ' + er.toString() }).end(); return; }
           const updatePasswordQuery = `UPDATE users SET Password = '${hash}' WHERE Email = '${email}'`;
 
