@@ -18,7 +18,7 @@ module.exports = {
     getCompanies: (req, res) => {
         const query = 'SELECT * FROM companies';
 
-        database.executeStatement(query, [], (err, rows) => {
+        database.executeStatement(query, [''], (err, rows) => {
             if (err) { res.status(500).json({ message: 'Error: ' + err.toString() }).end(); return; }
             if (!rows[0]) { res.status(404).json({ message: 'No companies found' }).end(); return; }
             database.handleResponse(req, err, rows, res);

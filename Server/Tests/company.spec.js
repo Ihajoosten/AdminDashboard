@@ -180,3 +180,97 @@ describe('Create company tests', () => {
         expect(result.body.message).equal('Undefined phone');
     });
 });
+
+describe('Get company tests', () => {
+
+    beforeEach((done) => {
+
+        bcrypt.hash('TestPassword123!', 10, (err, hash) => {
+            if (err) { logger.error({ message: 'Error: ' + err.toString() }); }
+
+            database.executeStatement(constants.createUserQuery(hash), [hash], (error, result) => {
+                if (error) { logger.error('Providing data in tables failed: ' + err.toString()); return; }
+
+                database.executeStatement(constants.createCompanyQuery(), ['newCompany'], (err, rows) => {
+                    if (err) { logger.error('Providing data in tables failed: ' + err.toString()); return; }
+                    done();
+                });
+            });
+        });
+    });
+
+    afterEach((done) => {
+        database.executeStatement('DELETE FROM users', [''], (error, result) => {
+            if (error) { logger.error('Cleaning the tables failed: ', err.toString()); return; }
+            database.executeStatement('DELETE FROM companies', [''], (err, rows) => {
+                if (err) { logger.error('Cleaning the tables failed: ', err.toString()); return; }
+                done();
+            });
+        });
+    });
+
+    it('Testing get company', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+
+        const result = await requester.get('/api/company/247').set('Authorization', 'Bearer ' + user.body.token);
+        expect(result).to.have.status(200);
+        expect(result.body).to.have.property('result');
+        expect(result.body).to.have.property('token');
+    });
+    
+    it('Testing get not existing company', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+
+        const result = await requester.get('/api/company/9999').set('Authorization', 'Bearer ' + user.body.token);
+        expect(result).to.have.status(404);
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Invalid Company!');
+    });
+
+    it('Testing wrong url', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+
+        const result = await requester.get('/api/company/247/test').set('Authorization', 'Bearer ' + user.body.token);
+        expect(result).to.have.status(404);
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Not found error: 404');
+    });
+
+    it('Testing invalid credentials', async () => {
+        const requestBody = {
+            email: 'Test@gmail.nl',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+
+        const result = await requester.get('/api/company/247').set('Authorization', 'Bearer ' + user.body.token);
+        expect(result).to.have.status(401);
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Not authorized');
+    });
+
+    it('Testing no header set', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+
+        const result = await requester.get('/api/company/247');
+        expect(result).to.have.status(401);
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('No authorization header included');
+    });
+});
