@@ -75,7 +75,7 @@ module.exports = {
         const companyId = req.params.id;
         const searchQuery = `SELECT * FROM companies WHERE Id = '${companyId}'`;
         const updateQuery = `UPDATE companies SET 
-            name = '${body.name}',
+            Name = '${body.name}',
             Branch = '${body.branch}',
             Department = '${body.department}',
             Email = '${body.email}',
@@ -86,7 +86,7 @@ module.exports = {
             if (error) { res.status(500).json({ message: 'Error: ' + error.toString() }).end(); return; }
             if (!result[0]) { res.status(404).json({ message: 'Invalid Company!' }).end(); return; }
 
-            database.executeStatement(updateQuery, [body], (err, rows) => {
+            database.executeStatement(updateQuery, [companyId], (err, rows) => {
                 if (err) { res.status(500).json({ message: 'Error: ' + err.toString() }).end(); return; }
                 database.handleResponse(req, err, rows, res);
             });

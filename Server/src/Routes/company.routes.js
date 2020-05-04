@@ -10,7 +10,7 @@ router.get('/:companyId', auth.validateToken, company.getCompany);
 
 router.post('/create', auth.validateToken, company.addCompany);
 
-router.patch('/edit/:id', auth.validateToken, company.editCompany);
+router.put('/edit/:id', auth.validateToken, company.editCompany);
 
 router.delete('/delete/:id', auth.validateToken, company.deleteCompany);
 
