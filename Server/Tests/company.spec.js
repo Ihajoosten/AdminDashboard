@@ -143,4 +143,40 @@ describe('Create company tests', () => {
         expect(result.body.message).equal('Undefined department');
     });
 
+    it('Testing create new company - no email', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+        const body = {
+            name: "Adidas",
+            branch: "Sales",
+            department: "Breda",
+        }
+        const result = await requester.post('/api/company/create').set('Authorization', 'Bearer ' + user.body.token).send(body)
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Undefined email');
+    });
+
+    it('Testing create new company - no phone', async () => {
+        const requestBody = {
+            email: 'Test@gmail.com',
+            password: 'TestPassword123!'
+        };
+        const user = await requester.post('/api/auth/login').send(requestBody);
+        const body = {
+            name: "Adidas",
+            branch: 'TestBranch',
+            department: 'Breda',
+            email: "info@adidas.com"
+        }
+        const result = await requester.post('/api/company/create').set('Authorization', 'Bearer ' + user.body.token).send(body)
+
+        expect(result).to.have.status(400);
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Undefined phone');
+    });
 });
