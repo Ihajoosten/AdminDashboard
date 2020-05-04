@@ -7,14 +7,13 @@ const constants = require('./config/constants');
 const database = require('../src/Configs/database');
 const logger = require('../src/Configs/config').logger;
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 /** Login User tests */
 describe('Login User tests', () => {
 
     beforeEach((done) => {
         bcrypt.hash('TestPassword123!', 10, (err, hash) => {
-            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
+            if (err) { logger.error({ message: 'Error: ' + err.toString() }); }
 
             database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
                 if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
@@ -40,8 +39,8 @@ describe('Login User tests', () => {
 
         expect(result).to.have.status(200);
         expect(result.body).to.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Logged in successfully!');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Logged in successfully!');
     });
 
     it('Testing wrong email', async () => {
@@ -54,8 +53,8 @@ describe('Login User tests', () => {
 
         expect(result).to.have.status(404);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Email does not exist!');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Email does not exist!');
     });
 
     it('Testing wrong password', async () => {
@@ -68,8 +67,8 @@ describe('Login User tests', () => {
 
         expect(result).to.have.status(404);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Invalid password!');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Invalid password!');
     });
 
     it('Testing empty password', async () => {
@@ -82,8 +81,8 @@ describe('Login User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - password was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - password was undefined');
     });
 
     it('Testing empty email', async () => {
@@ -96,8 +95,8 @@ describe('Login User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - email was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - email was undefined');
     });
 
     it('Testing empty body', async () => {
@@ -109,8 +108,8 @@ describe('Login User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - body was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - body was undefined');
     });
 });
 
@@ -120,7 +119,7 @@ describe('GetUserByID tests', () => {
 
     beforeEach((done) => {
         bcrypt.hash('TestPassword123!', 10, (err, hash) => {
-            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
+            if (err) { logger.error({ message: 'Error: ' + err.toString() }); }
 
             database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
                 if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
@@ -143,9 +142,9 @@ describe('GetUserByID tests', () => {
 
         expect(result).to.have.status(401);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
+        expect(result.body).to.have.property('message');
         expect(result.body).to.have.property('code');
-        expect(result.body.Message).equal('No authorization header included');
+        expect(result.body.message).equal('No authorization header included');
         expect(result.body.code).equal(401);
     });
 
@@ -155,9 +154,9 @@ describe('GetUserByID tests', () => {
 
         expect(result).to.have.status(401);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
+        expect(result.body).to.have.property('message');
         expect(result.body).to.have.property('code');
-        expect(result.body.Message).equal('Not authorized');
+        expect(result.body.message).equal('Not authorized');
         expect(result.body.code).equal(401);
     });
 
@@ -197,7 +196,7 @@ describe('Register User tests', () => {
 
     beforeEach((done) => {
         bcrypt.hash('TestPassword123!', 10, (err, hash) => {
-            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
+            if (err) { logger.error({ message: 'Error: ' + err.toString() }); }
 
             database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
                 if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
@@ -243,8 +242,8 @@ describe('Register User tests', () => {
         const result = await requester.post('/api/auth/register').send(newUser);
 
         expect(result).to.have.status(409);
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Email already taken!');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Email already taken!');
     });
 
     it('Testing undefined firstname', async () => {
@@ -256,8 +255,8 @@ describe('Register User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - firstname was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - firstname was undefined');
     });
 
     it('Testing undefined lastname', async () => {
@@ -270,8 +269,8 @@ describe('Register User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - lastname was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - lastname was undefined');
     });
 
     it('Testing undefined email', async () => {
@@ -285,8 +284,8 @@ describe('Register User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - email was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - email was undefined');
     });
 
     it('Testing undefined birthday', async () => {
@@ -301,8 +300,8 @@ describe('Register User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - birthday was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - birthday was undefined');
     });
 
     it('Testing undefined phone', async () => {
@@ -318,8 +317,8 @@ describe('Register User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - phone was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - phone was undefined');
     });
 
     it('Testing undefined password', async () => {
@@ -336,8 +335,8 @@ describe('Register User tests', () => {
 
         expect(result).to.have.status(400);
         expect(result.body).to.not.have.property('token');
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Bad Request - password was undefined');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Bad Request - password was undefined');
     });
 });
 
@@ -347,7 +346,7 @@ describe('Update User tests', () => {
 
     beforeEach((done) => {
         bcrypt.hash('TestPassword123!', 10, (err, hash) => {
-            if (err) { logger.error({ Message: 'Error: ' + err.toString() }); }
+            if (err) { logger.error({ message: 'Error: ' + err.toString() }); }
 
             database.executeStatement(constants.createUserQuery(hash), [hash], (err, rows) => {
                 if (err) { logger.error('Providing data in tables failed: ' + err.toString()); }
@@ -379,8 +378,8 @@ describe('Update User tests', () => {
         const result = await requester.patch('/api/auth/reset-password').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
 
         expect(result).to.have.status(401);
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Invalid Email!');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Invalid Email!');
     });
 
     it('Testing with invalid url', async () => {
@@ -399,8 +398,8 @@ describe('Update User tests', () => {
         const result = await requester.patch('/api/auth/reset-password/247').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
 
         expect(result).to.have.status(404);
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('Not found error: 404');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('Not found error: 404');
     });
 
     it('Testing with invalid oldPassword', async () => {
@@ -419,8 +418,8 @@ describe('Update User tests', () => {
         const result = await requester.patch('/api/auth/reset-password').set('Authorization', 'Bearer ' + signedInUser.body.token).send(resetPassBody);
 
         expect(result).to.have.status(401);
-        expect(result.body).to.have.property('Message');
-        expect(result.body.Message).equal('old password is invalid!');
+        expect(result.body).to.have.property('message');
+        expect(result.body.message).equal('old password is invalid!');
     });
 
     it('Testing with valid credentials', async () => {

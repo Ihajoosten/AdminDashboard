@@ -18,12 +18,12 @@ module.exports = {
   validateToken: (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({ Message: 'No authorization header included', code: 401 });
+      return res.status(401).json({ message: 'No authorization header included', code: 401 });
     }
     const token = authHeader.substring(7, authHeader.length);
     jwt.verify(token, secret, err => {
       if (err) {
-        return res.status(401).json({ Message: 'Not authorized', code: 401 });
+        return res.status(401).json({ message: 'Not authorized', code: 401 });
       }
       const payload = jwt.decode(token);
 
@@ -49,31 +49,31 @@ module.exports = {
     // if somethng is undefined return given 400 status
     switch (body) {
       case !body:
-        res.status(400).json({ Message: 'Bad Request - body was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - body was undefined' }).end();
         break;
 
       case (!body.firstname && body.firstname === '') && body:
-        res.status(400).json({ Message: 'Bad Request - firstname was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - firstname was undefined' }).end();
         break;
 
       case (!body.lastname && body.lastname === '') && body:
-        res.status(400).json({ Message: 'Bad Request - lastname was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - lastname was undefined' }).end();
         break;
 
       case (!body.email && body.email === '') && body:
-        res.status(400).json({ Message: 'Bad Request - email was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - email was undefined' }).end();
         break;
 
       case (!body.birthday && body.birthday === '') && body:
-        res.status(400).json({ Message: 'Bad Request - birthday was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - birthday was undefined' }).end();
         break;
 
       case (!body.phone && body.phone === '') && body:
-        res.status(400).json({ Message: 'Bad Request - phone was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - phone was undefined' }).end();
         break;
 
       case (!body.password && body.password === '') && body:
-        res.status(400).json({ Message: 'Bad Request - password was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - password was undefined' }).end();
         break;
 
       default:
@@ -83,8 +83,8 @@ module.exports = {
 
 
         database.executeStatement(lookupEmail, [req.body.email], (error, result) => {
-          if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
-          if (result[0]) { res.status(409).json({ Message: 'Email already taken!' }).end(); return; }
+          if (error) { res.status(500).json({ message: 'Error: ' + error.toString() }).end(); return; }
+          if (result[0]) { res.status(409).json({ message: 'Email already taken!' }).end(); return; }
 
           newUser.firstname = req.body.firstname;
           newUser.lastname = req.body.lastname;
@@ -93,7 +93,7 @@ module.exports = {
           newUser.phone = req.body.phone;
 
           bcrypt.hash(req.body.password, 10, function (err, hash) {
-            if (err) { res.status(400).json({ Message: 'Unable to generate hash!' }).end(); return; }
+            if (err) { res.status(400).json({ message: 'Unable to generate hash!' }).end(); return; }
 
 
             const query = `INSERT INTO users VALUES('',
@@ -117,15 +117,15 @@ module.exports = {
     // if somethng is undefined return given 400 status
     switch (body) {
       case !body.email && !body.password && body:
-        res.status(400).json({ Message: 'Bad Request - body was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - body was undefined' }).end();
         break;
 
       case (!body.email && body.email === '') && body:
-        res.status(400).json({ Message: 'Bad Request - email was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - email was undefined' }).end();
         break;
 
       case (!body.password || body.password === '') && body:
-        res.status(400).json({ Message: 'Bad Request - password was undefined' }).end();
+        res.status(400).json({ message: 'Bad Request - password was undefined' }).end();
         break;
 
       default:
@@ -134,12 +134,12 @@ module.exports = {
 
         // lookup if email exists in database
         database.executeStatement(lookupEmailQuery, [body.email], (error, result) => {
-          if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
-          if (!result[0]) { res.status(404).json({ Message: 'Email does not exist!' }).end(); return; }
+          if (error) { res.status(500).json({ message: 'Error: ' + error.toString() }).end(); return; }
+          if (!result[0]) { res.status(404).json({ message: 'Email does not exist!' }).end(); return; }
 
           // lookup if user in database
           database.executeStatement(lookupUserQuery, [body.email], (er, rows) => {
-            if (er) { res.status(500).json({ Message: 'Error: ' + er.toString() }).end(); return; }
+            if (er) { res.status(500).json({ message: 'Error: ' + er.toString() }).end(); return; }
             if (rows) {
               bcrypt.compare(req.body.password, rows[0].Password, (err, isMatch) => {
                 if (err) { res.status(500).json('Error: ' + err.toString()).end(); return; }
@@ -151,9 +151,9 @@ module.exports = {
                     email: rows[0].Email
                   }
                   const token = generateJWT(user);
-                  res.status(200).json({ Message: 'Logged in successfully!', token: token }).end();
+                  res.status(200).json({ message: 'Logged in successfully!', token: token }).end();
                 } else {
-                  res.status(404).json({ Message: 'Invalid password!' }).end();
+                  res.status(404).json({ message: 'Invalid password!' }).end();
                   return;
                 }
               })
@@ -170,13 +170,13 @@ module.exports = {
     const lookupUserQuery = `SELECT * FROM users WHERE Email = '${email}'`;
 
     database.executeStatement(lookupUserQuery, [email], (error, result) => {
-      if (error) { res.status(500).json({ Message: 'Error: ' + error.toString() }).end(); return; }
+      if (error) { res.status(500).json({ message: 'Error: ' + error.toString() }).end(); return; }
 
-      if (!result[0]) { res.status(401).json({ Message: 'Invalid Email!' }).end(); return; }
+      if (!result[0]) { res.status(401).json({ message: 'Invalid Email!' }).end(); return; }
 
       if (bcrypt.compareSync(oldPassword, result[0].Password)) {
         bcrypt.hash(newPassword, 10, (er, hash) => {
-          if (er) { res.status(500).json({ Message: 'Error: ' + er.toString() }).end(); return; }
+          if (er) { res.status(500).json({ message: 'Error: ' + er.toString() }).end(); return; }
           const updatePasswordQuery = `UPDATE users SET Password = '${hash}' WHERE Email = '${email}'`;
 
           database.executeStatement(updatePasswordQuery, [hash], (err, rows) => {
@@ -184,7 +184,7 @@ module.exports = {
           });
         });
       } else {
-        res.status(401).json({ Message: 'old password is invalid!' }).end();
+        res.status(401).json({ message: 'old password is invalid!' }).end();
         return;
       }
     });
