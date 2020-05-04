@@ -11,6 +11,7 @@ const port = process.env.PORT || 247;
 // routes
 const authRoutes = require('./src/Routes/authentication.routes');
 const companyRoutes = require('./src/Routes/company.routes');
+const productRoutes = require('./src/Routes/products.routes');
 
 // Specification server app
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,6 +23,7 @@ app.use(express.static('static'));
 // setting up routes
 app.use('/api/auth', authRoutes);
 app.use('/api/company', companyRoutes);
+app.use('/api/product', productRoutes);
 
 // Handle 404's -> Not found
 app.use((req, res) => {
