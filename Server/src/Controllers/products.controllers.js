@@ -42,7 +42,7 @@ module.exports = {
                 res.status(400).json({ message: 'Undefined price' }).end();
                 break;
             case (!body.brand || body.brand === '') && body:
-                res.status(400).json({ message: 'Undefined embrandail' }).end();
+                res.status(400).json({ message: 'Undefined brand' }).end();
                 break;
             case (!body.dateReleased || body.dateReleased === '') && body:
                 res.status(400).json({ message: 'Undefined dateReleased' }).end();
