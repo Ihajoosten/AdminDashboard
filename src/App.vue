@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
-		<Navbar class="is-fixed-top" />
-		<div class="container" style="margin-top: 84px">
+		<Navbar />
+		<div class="container" >
 			<router-view></router-view>
 		</div>
 		<Footer />
