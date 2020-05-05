@@ -34,6 +34,11 @@ const router = new Router({
             path: '/account',
             name: 'Account',
             component: () => import('./components/user/Account.vue')
+        },
+        {
+            path: '/companies',
+            name: 'Companies',
+            component: () => import('./components/company/CompanyList.vue')
         }
     ],
     mode: 'history'
