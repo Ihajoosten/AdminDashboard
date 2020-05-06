@@ -1,7 +1,7 @@
 <template>
 	<div class="modal-card">
 		<section class="modal-card-body">
-			<h3 class="title has-text-centered has-text-dark">Login</h3>
+			<h3 class="title has-text-centered has-text-dark">Log in</h3>
 			<div class="box">
 				<b-field label="Email">
 					<b-input v-model="email" type="email" placeholder="Email"></b-input>

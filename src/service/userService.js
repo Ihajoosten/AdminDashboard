@@ -25,24 +25,16 @@ async function login(email, password) {
 }
 
 async function register(user) {
-    return await axios.post(`${BASE_URL}/api/auth/register`, { user })
+    return await axios.post(`${BASE_URL}/api/auth/register`, { user }).then(res => {
+        if (res.status !== 200) {
+            if (res.status === (409 || 400)) {
+                return Promise.reject(res.data.message);
+            }
+        }
+        return Promise.resolve();
+    })
 }
 
 function logout() {
     localStorage.removeItem('user');
-}
-
-function handleResponse(res) {
-    if (res.status !== 200) {
-        if (res.status === 401) {
-            logout();
-            location.reload(true);
-        }
-        else if (res.status === 400) {
-            return Promise.reject(res.data.message)
-        }
-        const error = (res.data && res.data.message) || res.statusText;
-        return Promise.reject(error);
-    }
-    return Promise.resolve(res.data);
 }

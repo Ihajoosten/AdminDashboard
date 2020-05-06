@@ -44,7 +44,7 @@ module.exports = {
     next();
   },
   registerUser: async (req, res) => {
-    const body = req.body;
+    const body = req.body.user;
 
     // if somethng is undefined return given 400 status
     switch (body) {
@@ -82,17 +82,17 @@ module.exports = {
 
 
 
-        database.executeStatement(lookupEmail, [req.body.email], (error, result) => {
+        database.executeStatement(lookupEmail, [body.email], (error, result) => {
           if (error) { res.status(500).json({ message: 'Error: ' + error.toString() }).end(); return; }
           if (result[0]) { res.status(409).json({ message: 'Email already taken!' }).end(); return; }
 
-          newUser.firstname = req.body.firstname;
-          newUser.lastname = req.body.lastname;
-          newUser.email = req.body.email;
-          newUser.birthday = req.body.birthday;
-          newUser.phone = req.body.phone;
+          newUser.firstname = body.firstname;
+          newUser.lastname = body.lastname;
+          newUser.email = body.email;
+          newUser.birthday = body.birthday;
+          newUser.phone = body.phone;
 
-          bcrypt.hash(req.body.password, 10, function (err, hash) {
+          bcrypt.hash(body.password, 10, function (err, hash) {
             if (err) { res.status(400).json({ message: 'Unable to generate hash!' }).end(); return; }
 
 
