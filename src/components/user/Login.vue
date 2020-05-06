@@ -1,15 +1,76 @@
 <template>
-    <div>
-        <h1> Login LMAO</h1>
-    </div>
+	<div class="modal-card">
+		<section class="modal-card-body">
+			<h3 class="title has-text-centered has-text-dark">Login</h3>
+			<div class="box">
+				<b-field label="Email">
+					<b-input v-model="email" type="email" placeholder="Email"></b-input>
+				</b-field>
+
+				<b-field label="Password">
+					<b-input
+						v-model="password"
+						type="password"
+						placeholder="Password"
+						minlength="6"
+						password-reveal
+					></b-input>
+				</b-field>
+				<b-field>
+					<a
+						class="password-remind-link has-text-dark is-pulled-right"
+						v-on:click="openResetPasswordModal()"
+					>I forgot my password</a>
+				</b-field>
+				<button class="button is-dark is-large is-fullwidth" v-on:click="login()">Login</button>
+			</div>
+			<div class="has-text-centered">
+				Not an account yet? <button class="button is-primary is-small" v-on:click="openRegisterModal()">Sign up</button> here
+			</div>
+		</section>
+	</div>
 </template>
 
 <script>
-export default {
-    
-}
+	import RegisterModal from "../user/Register";
+	import ResetpasswordModal from "../user/ResetPassword";
+
+	export default {
+		name: "LoginModal",
+		data() {
+			return {
+				email: "",
+				password: ""
+			};
+		},
+		methods: {
+			closeModal() {
+				this.$parent.close();
+			},
+			openRegisterModal() {
+                this.$parent.close();
+				this.$buefy.modal.open({
+					parent: this,
+					component: RegisterModal,
+					hasModalCard: true,
+					props: {}
+				});
+            },
+            openResetPasswordModal() {
+                this.$parent.close();
+				this.$buefy.modal.open({
+					parent: this,
+					component: ResetpasswordModal,
+					hasModalCard: true,
+					props: {}
+				});
+			},
+			login() {
+                // this.$parent.close();
+			}
+		}
+	};
 </script>
 
 <style scoped>
-
 </style>

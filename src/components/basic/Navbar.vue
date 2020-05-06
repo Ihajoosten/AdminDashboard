@@ -57,18 +57,10 @@
 			<div class="navbar-item">
 				<div class="field is-grouped is-grouped-multiline">
 					<div class="buttons">
-						<b-navbar-item
-							class="button is-primary"
-							tag="router-link"
-							:to="{ name: 'Register', path: '/register' }"
-						>
+						<b-navbar-item class="button is-primary" v-on:click="openRegisterModal()">
 							<strong>Sign up</strong>
 						</b-navbar-item>
-						<b-navbar-item
-							class="button is-light"
-							tag="router-link"
-							:to="{ name: 'Login	', path: '/login' }"
-						>Log in</b-navbar-item>
+						<b-navbar-item class="button is-light" v-on:click="openLoginModal()">Log in</b-navbar-item>
 					</div>
 				</div>
 			</div>
@@ -77,7 +69,32 @@
 </template>
 
 <script>
-	export default {};
+	import LoginModal from "../user/Login";
+	import RegisterModal from "../user/Register";
+
+	export default {
+		data() {
+			return {};
+		},
+		methods: {
+			openLoginModal() {
+				this.$buefy.modal.open({
+					parent: this,
+					component: LoginModal,
+					hasModalCard: true,
+					props: {}
+				});
+			},
+			openRegisterModal() {
+				this.$buefy.modal.open({
+					parent: this,
+					component: RegisterModal,
+					hasModalCard: true,
+					props: {}
+				});
+			}
+		}
+	};
 </script>
 
 <style scoped>

@@ -16,21 +16,6 @@ const router = new Router({
             component: () => import('./components/basic/Home.vue')
         },
         {
-            path: '/login',
-            name: 'Login',
-            component: () => import('./components/user/Login.vue')
-        },
-        {
-            path: '/register',
-            name: 'Register',
-            component: () => import('./components/user/Register.vue')
-        },
-        {
-            path: '/reset-password',
-            name: 'ResetPassword',
-            component: () => import('./components/user/ResetPassword.vue')
-        },
-        {
             path: '/account',
             name: 'Account',
             component: () => import('./components/user/Account.vue')
