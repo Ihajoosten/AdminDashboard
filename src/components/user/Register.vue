@@ -42,7 +42,10 @@
 			</div>
 			<div class="has-text-centered">
 				Already an account?
-				<button class="button is-primary is-small" v-on:click="openLoginModal()">Login</button> here
+				<button
+					class="button is-primary is-small"
+					v-on:click="openLoginModal()"
+				>Login</button> here
 			</div>
 		</section>
 	</div>
@@ -64,9 +67,6 @@
 			};
 		},
 		methods: {
-			closeModal() {
-				this.$parent.close();
-			},
 			openLoginModal() {
 				this.$parent.close();
 				this.$buefy.modal.open({

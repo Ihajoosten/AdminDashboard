@@ -113,7 +113,6 @@ module.exports = {
   },
   loginUser: (req, res) => {
     const body = req.body;
-
     // if somethng is undefined return given 400 status
     switch (body) {
       case !body.email && !body.password && body:
