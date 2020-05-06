@@ -134,7 +134,7 @@ module.exports = {
         // lookup if email exists in database
         database.executeStatement(lookupEmailQuery, [body.email], (error, result) => {
           if (error) { res.status(500).json({ message: 'Error: ' + error.toString() }).end(); return; }
-          if (!result[0]) { res.status(404).json({ message: 'Email does not exist!' }).end(); return; }
+          if (!result[0]) { res.status(401).json({ message: 'Email does not exist!' }).end(); return; }
 
           // lookup if user in database
           database.executeStatement(lookupUserQuery, [body.email], (er, rows) => {
@@ -152,7 +152,7 @@ module.exports = {
                   const token = generateJWT(user);
                   res.status(200).json({ message: 'Logged in successfully!', token: token }).end();
                 } else {
-                  res.status(404).json({ message: 'Invalid password!' }).end();
+                  res.status(401).json({ message: 'Invalid password!' }).end();
                   return;
                 }
               })

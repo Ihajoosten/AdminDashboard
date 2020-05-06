@@ -10,19 +10,15 @@ const actions = {
     login({ dispatch, commit }, { email, password }) {
         commit('loginRequest', { email });
 
-        userService.login(email, password)
-            .then(
-                user => {
-                    commit('loginSuccess', user);
-                    closeModal();
-                    router.push('/');
-                },
-                error => {
-                    console.debug(error)
-                    commit('loginFailure', error);
-                    dispatch('alert/error', error.message, { root: true });
-                }
-            );
+        userService.login(email, password).then(res => {
+            console.log(state.user.status)
+            commit('loginSuccess', res.token)
+            dispatch('alert/success', res.message, { root: true });
+            console.log(state.user.status)
+        }).catch(err => {
+            commit('loginFailure', err);
+            dispatch('alert/error', err.response.data.message, { root: true });
+        });
     },
     logout({ commit }) {
         userService.logout();
@@ -35,15 +31,14 @@ const actions = {
             .then(
                 user => {
                     commit('registerSuccess', user);
-                    openLoginModal();
                     setTimeout(() => {
                         // display success message after route change completes
-                        //dispatch('alert/success', 'Registration successful', { root: true });
+                        dispatch('alert/success', 'Registration successful', { root: true });
                     })
                 },
                 error => {
                     commit('registerFailure', error);
-                    //dispatch('alert/error', error, { root: true });
+                    dispatch('alert/error', error, { root: true });
                 }
             );
     }
@@ -51,7 +46,7 @@ const actions = {
 
 const mutations = {
     loginRequest(state, user) {
-        state.status = { loggingIn: true };
+        state.status = { loggedIn: false };
         state.user = user;
     },
     loginSuccess(state, user) {
@@ -83,17 +78,3 @@ export const userModule = {
     actions,
     mutations
 };
-
-function openLoginModal() {
-    this.$parent.close();
-    this.$buefy.modal.open({
-        parent: this,
-        component: LoginModal,
-        hasModalCard: true,
-        props: {}
-    });
-}
-
-function closeModal() {
-    this.$parent.close();
-}
