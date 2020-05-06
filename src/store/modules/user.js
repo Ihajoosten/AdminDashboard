@@ -7,21 +7,12 @@ const user = JSON.parse(localStorage.getItem('user'));
 const state = user ? { status: { loggedIn: true }, user } : { status: {}, user: null };
 
 const actions = {
-    login({ dispatch, commit }, { email, password }) {
+    login({ commit }, { email, password }) {
         commit('loginRequest', { email });
-
-        userService.login(email, password).then(res => {
-            console.log(state.user.status)
-            commit('loginSuccess', res.token)
-            dispatch('alert/success', res.message, { root: true });
-            console.log(state.user.status)
-        }).catch(err => {
-            commit('loginFailure', err);
-            dispatch('alert/error', err.response.data.message, { root: true });
-        });
+        return userService.login(email, password)
     },
     logout({ commit }) {
-        userService.logout();
+        localStorage.removeItem('user');
         commit('logout');
     },
     register({ dispatch, commit }, user) {
@@ -46,7 +37,7 @@ const actions = {
 
 const mutations = {
     loginRequest(state, user) {
-        state.status = { loggedIn: false };
+        state.status = { logginIn: true };
         state.user = user;
     },
     loginSuccess(state, user) {

@@ -12,7 +12,9 @@
 <script>
 	import Navbar from "./components/basic/Navbar";
 	import Footer from "./components/basic/Footer";
+	import LoginModal from "./components/user/Login";
 	import { mapState, mapActions } from "vuex";
+	import { router } from "./routes";
 
 	export default {
 		name: "App",
@@ -28,14 +30,29 @@
 		methods: {
 			...mapActions({
 				clearAlert: "alert/clear"
-			})
+			}),
+			openLoginModal() {
+				this.$buefy.modal.open({
+					parent: this,
+					component: LoginModal,
+					hasModalCard: true,
+					props: {}
+				});
+			}
 		},
 		watch: {
 			// eslint-disable-next-line no-unused-vars
 			$route(to, from) {
-				// clear alert on location change
 				this.clearAlert();
 			}
+		},
+		created() {
+			router.beforeEach((to, from, next) => {
+				if (!localStorage.getItem("user")) {
+					return this.openLoginModal();
+				}
+				next();
+			});
 		}
 	};
 </script>

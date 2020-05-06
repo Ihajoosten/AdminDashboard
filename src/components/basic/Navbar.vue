@@ -53,7 +53,7 @@
 			</b-navbar-item>
 		</template>
 
-		<template slot="end">
+		<template v-if="!isLoggedIn" slot="end">
 			<div class="navbar-item">
 				<div class="field is-grouped is-grouped-multiline">
 					<div class="buttons">
@@ -65,18 +65,43 @@
 				</div>
 			</div>
 		</template>
+
+		<template v-else slot="end">
+			<div class="navbar-item">
+				<div class="field is-grouped is-grouped-multiline">
+					<div class="buttons">
+						<b-navbar-item class="button is-primary is-small">
+							<strong>Account</strong>
+						</b-navbar-item>
+						<b-navbar-item class="button is-danger is-small" v-on:click="signOut()">
+							<strong>Log out</strong>
+						</b-navbar-item>
+					</div>
+				</div>
+			</div>
+		</template>
 	</b-navbar>
 </template>
 
 <script>
 	import LoginModal from "../user/Login";
 	import RegisterModal from "../user/Register";
+	import { mapState, mapActions } from "vuex";
 
 	export default {
 		data() {
 			return {};
 		},
+		computed: {
+			...mapState({
+				isLoggedIn: state => state.userModule.user
+			})
+		},
 		methods: {
+			...mapActions("userModule", ["logout"]),
+			signOut() {
+				this.logout();
+			},
 			openLoginModal() {
 				this.$buefy.modal.open({
 					parent: this,

@@ -43,7 +43,7 @@
 			};
 		},
 		computed: {
-			...mapState('userModule', ['status'])
+			...mapState("userModule", ["status"])
 		},
 		methods: {
 			...mapActions("userModule", ["login", "logout"]),
@@ -69,16 +69,18 @@
 				});
 			},
 			handleSubmit() {
-				this.login({ email: this.email, password: this.password }).then(() => {
-					console.log(this.$store.state.userModule.status)
-					console.log(this.$store.state.userModule.user)
-					if (this.$store.state.userModule.status.loggedIn) {
+				this.login({ email: this.email, password: this.password })
+					.then(res => {
+						this.$store.commit("userModule/loginSuccess", res.token);
+						this.$store.dispatch("alert/success", res.message, { root: true });
 						this.closeModal();
-					}
-				});
+					})
+					.catch(err => {
+						this.$store.commit("userModule/loginFailure", err);
+						this.$store.dispatch("alert/error", err.response.data.message, { root: true });
+					});
 			},
 			created() {
-				// reset login status
 				this.logout();
 			}
 		}
