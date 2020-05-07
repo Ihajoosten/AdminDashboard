@@ -86,16 +86,27 @@
 				this.register({ user: this.user })
 					.then(res => {
 						this.$store.commit("userModule/registerSuccess", res);
-						this.$store.dispatch("alert/success", "Signed up successfully!", {
-							root: true
-						});
+						this.$store.dispatch(
+							"alert/success",
+							{ message: "Signed up successfully!", title: "Success" },
+							{
+								root: true
+							}
+						);
 						this.openLoginModal();
 					})
 					.catch(err => {
 						this.$store.commit("userModule/registerFailure", err);
-						this.$store.dispatch("alert/error", err.response.data.message, {
-							root: true
-						});
+						this.$store.dispatch(
+							"alert/error",
+							{
+								message: err.response.data.message,
+								title: "Could not sign you up!"
+							},
+							{
+								root: true
+							}
+						);
 					});
 			}
 		}
