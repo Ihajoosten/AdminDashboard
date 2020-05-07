@@ -1,14 +1,15 @@
 const state = {
     type: null,
-    message: null
+    message: null,
+    title: null
 };
 
 const actions = {
-    success({ commit }, message) {
-        commit('success', message);
+    success({ commit }, message, title) {
+        commit('success', message, title);
     },
-    error({ commit }, message) {
-        commit('error', message);
+    error({ commit }, message, title) {
+        commit('error', message, title);
     },
     clear({ commit }) {
         commit('clear');
@@ -16,17 +17,20 @@ const actions = {
 };
 
 const mutations = {
-    success(state, message) {
+    success(state, { message, title }) {
         state.type = 'alert-success';
         state.message = message;
+        state.title = title;
     },
-    error(state, message) {
+    error(state, { message, title }) {
         state.type = 'alert-danger';
         state.message = message;
+        state.title = title;
     },
     clear(state) {
         state.type = null;
         state.message = null;
+        state.title = null;
     }
 };
 

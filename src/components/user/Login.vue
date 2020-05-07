@@ -72,12 +72,23 @@
 				this.login({ email: this.email, password: this.password })
 					.then(res => {
 						this.$store.commit("userModule/loginSuccess", res.token);
-						this.$store.dispatch("alert/success", res.message, { root: true });
+						this.$store.dispatch(
+							"alert/success",
+							{ message: res.message, title: "Success" },
+							{ root: true }
+						);
 						this.closeModal();
 					})
 					.catch(err => {
 						this.$store.commit("userModule/loginFailure", err);
-						this.$store.dispatch("alert/error", err.response.data.message, { root: true });
+						this.$store.dispatch(
+							"alert/error",
+							{
+								message: err.response.data.message,
+								title: "could not sign you in!"
+							},
+							{ root: true }
+						);
 					});
 			},
 			created() {

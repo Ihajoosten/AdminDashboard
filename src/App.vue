@@ -2,7 +2,8 @@
 	<div id="app">
 		<Navbar />
 		<div class="container">
-			<div v-if="alert.message" :class="`alert ${alert.type}`">{{alert.message}}</div>
+			<div v-if="alert.type === 'alert-danger'">{{errorAlert()}}</div>
+			<div v-if="alert.type === 'alert-success'">{{successAlert()}}</div>
 			<router-view></router-view>
 		</div>
 		<Footer />
@@ -38,7 +39,31 @@
 					hasModalCard: true,
 					props: {}
 				});
-			}
+			},
+			errorAlert() {
+                this.$buefy.dialog.alert({
+                    title: 'Error: ' + this.alert.title,
+                    message: this.alert.message,
+                    type: 'is-danger',
+                    hasIcon: true,
+                    icon: 'times-circle',
+                    iconPack: 'fa',
+                    ariaRole: 'alertdialog',
+                    ariaModal: true
+                })
+			},
+			successAlert() {
+                this.$buefy.dialog.alert({
+                    title: this.alert.title,
+                    message: this.alert.message,
+                    type: 'is-success',
+                    hasIcon: true,
+                    icon: 'times-circle',
+                    iconPack: 'fa',
+                    ariaRole: 'alertdialog',
+                    ariaModal: true
+                })
+            }
 		},
 		watch: {
 			// eslint-disable-next-line no-unused-vars
