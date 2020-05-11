@@ -65,8 +65,17 @@ module.exports = {
 
                 database.executeStatement(query, [newCompany], (err, rows) => {
                     if (err) { res.status(500).json({ message: 'Error: ' + err.toString() }).end(); return; }
-                    if (rows) { res.status(200).json({ message: 'Created new company!' }).end(); return;}
-                    //database.handleResponse(req, err, rows, res);
+                    if (rows) {
+                        let obj = {
+                            Id: rows.insertId,
+                            Name: newCompany.name,
+                            Branch: newCompany.branch,
+                            Department: newCompany.department,
+                            Email: newCompany.email,
+                            Phone: newCompany.phone
+                        }
+                        res.status(200).json({ message: 'Created new company!', object: obj }).end(); return;
+                    }
                 });
                 break;
         }

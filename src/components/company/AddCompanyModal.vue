@@ -16,7 +16,7 @@
 				</b-field>
 
 				<b-field label="Email">
-					<b-input v-model="email" type="email" placeholder="Email"></b-input>
+					<b-input v-model="email" type="text" placeholder="Email"></b-input>
 				</b-field>
 
 				<b-field label="Phone">

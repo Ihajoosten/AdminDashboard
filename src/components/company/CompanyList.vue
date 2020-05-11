@@ -81,7 +81,7 @@
 								type="is-danger"
 								size="is-small"
 								icon-left="delete"
-								v-on:click="handleDelete(props.row.Id)"
+								v-on:click="handleDelete(props.row)"
 							></b-button>
 						</div>
 					</b-table-column>
@@ -152,8 +152,8 @@
 					props: {}
 				});
 			},
-			handleDelete(id) {
-				this.deleteCompany(id);
+			handleDelete(obj) {
+				this.deleteCompany(obj);
 			}
 		},
 		created() {

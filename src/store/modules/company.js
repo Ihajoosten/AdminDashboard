@@ -7,18 +7,21 @@ const state = {
 }
 
 const actions = {
-    newCompany({ commit }, company) {
+    async newCompany({ commit }, company) {
         const index = state.companies.length;
-        commit('addCompany', { index, company });
-        return companyService.createCompany(company);
+        const res = await companyService.createCompany(company);
+        commit('addCompany', { index, company: res.object });
+        return res;
     },
     async getCompanies({ commit }) {
         const companies = await companyService.getAllCompanies();
         commit('setCompanies', companies);
         return companies;
     },
-    deleteCompany({ commit }, id) {
-        return companyService.deleteCompany(id);
+    async deleteCompany({ commit }, company) {
+        const res = await companyService.deleteCompany(company.Id);
+        commit('deleteCompany', company);
+        return res;
     }
 }
 
@@ -27,7 +30,11 @@ const mutations = {
         state.companies = fetchedCompanies;
     },
     addCompany(state, { index, company }) {
-        return Vue.set(state.companies, index, company)
+        Vue.set(state.companies, index, company)
+    },
+    deleteCompany(state, payload) {
+        const i = state.companies.map(item => item.Id).indexOf(payload.Id);
+        state.companies.splice(i, 1);
     }
 }
 
