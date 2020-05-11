@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { userService } from '../../service/userService';
-import { router } from '../../routes';
-import LoginModal from '../../components/user/Login.vue';
 
-const user = JSON.parse(localStorage.getItem('user'));
-const state = user ? { status: { loggedIn: true }, user } : { status: {}, user: null };
+const participant = JSON.parse(localStorage.getItem('participant'));
+const state = participant ? { status: { loggedIn: true }, participant } : { status: {}, participant: null };
 
 const actions = {
     login({ commit }, { email, password }) {
@@ -12,7 +10,7 @@ const actions = {
         return userService.login(email, password)
     },
     logout({ commit }) {
-        localStorage.removeItem('user');
+        localStorage.removeItem('participant');
         commit('logout');
     },
     register({ commit }, { user }) {
@@ -24,19 +22,19 @@ const actions = {
 const mutations = {
     loginRequest(state, user) {
         state.status = { logginIn: true };
-        state.user = user;
+        state.participant = null;
     },
     loginSuccess(state, user) {
         state.status = { loggedIn: true };
-        state.user = user;
+        state.participant = user;
     },
     loginFailure(state) {
         state.status = {};
-        state.user = null;
+        state.participant = null;
     },
     logout(state) {
         state.status = {};
-        state.user = null;
+        state.participant = null;
     },
     registerRequest(state, user) {
         state.status = { registering: true };
@@ -49,7 +47,7 @@ const mutations = {
     }
 }
 
-export const userModule = {
+export const user = {
     namespaced: true,
     state,
     actions,

@@ -72,7 +72,7 @@
 		},
 		computed: {},
 		methods: {
-			...mapActions("userModule", ["register"]),
+			...mapActions("user", ["register"]),
 			openLoginModal() {
 				this.$parent.close();
 				this.$buefy.modal.open({
@@ -85,7 +85,7 @@
 			handleSubmit() {
 				this.register({ user: this.user })
 					.then(res => {
-						this.$store.commit("userModule/registerSuccess", res);
+						this.$store.commit("user/registerSuccess", res);
 						this.$store.dispatch(
 							"alert/success",
 							{ message: "Signed up successfully!", title: "Success" },
@@ -96,7 +96,7 @@
 						this.openLoginModal();
 					})
 					.catch(err => {
-						this.$store.commit("userModule/registerFailure", err);
+						this.$store.commit("user/registerFailure", err);
 						this.$store.dispatch(
 							"alert/error",
 							{

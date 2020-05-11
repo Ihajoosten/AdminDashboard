@@ -1,84 +1,49 @@
 <template>
-	<b-navbar class="bd-navbar navbar has-shadow is-spaced">
+	<b-navbar id="navbar">
 		<template slot="brand">
-			<b-navbar-item
-				class="brand-name"
-				style="font-size: 2.5vw;"
-				tag="router-link"
-				:to="{ name: 'Home', path: '/' }"
-			>
+			<b-navbar-item  tag="router-link" :to="{ name: 'Home', path: '/' }">
 				<img src="../../assets/img/admincloud-logo.jpg" alt="Admin Cloud - Always Up & Running" />
-			</b-navbar-item>
+			</b-navbar-item> 
 		</template>
 
 		<template slot="start">
-			<b-navbar-item
-				class="navbar-item bd-navbar-item-videos"
-				tag="router-link"
-				:to="{ name: 'Balance', path: '/balance' }"
-			>
+			<b-navbar-item tag="router-link" :to="{ name: 'Balance', path: '/balance' }">
 				<span>Balance</span>
 			</b-navbar-item>
 
-			<b-navbar-item
-				class="navbar-item bd-navbar-item-videos"
-				tag="router-link"
-				:to="{ name: 'Companies',  path: '/companies' }"
-			>
+			<b-navbar-item tag="router-link" :to="{ name: 'Companies',  path: '/companies' }">
 				<span>Companies</span>
 			</b-navbar-item>
 
-			<b-navbar-item
-				class="navbar-item bd-navbar-item-videos"
-				tag="router-link"
-				:to="{ name: 'Invoices',  path: '/invoices' }"
-			>
+			<b-navbar-item tag="router-link" :to="{ name: 'Invoices',  path: '/invoices' }">
 				<span>Invoices</span>
 			</b-navbar-item>
 
-			<b-navbar-item
-				class="navbar-item bd-navbar-item-videos"
-				tag="router-link"
-				:to="{ name: 'Products', path: '/products' }"
-			>
+			<b-navbar-item tag="router-link" :to="{ name: 'Products', path: '/products' }">
 				<span>Products</span>
 			</b-navbar-item>
 
-			<b-navbar-item
-				class="navbar-item bd-navbar-item-videos"
-				tag="router-link"
-				:to="{ name: 'Transactions', path: '/transactions' }"
-			>
+			<b-navbar-item tag="router-link" :to="{ name: 'Transactions', path: '/transactions' }">
 				<span>Transactions</span>
 			</b-navbar-item>
 		</template>
 
 		<template v-if="!isLoggedIn" slot="end">
-			<div class="navbar-item">
-				<div class="field is-grouped is-grouped-multiline">
-					<div class="buttons">
-						<b-navbar-item class="button is-primary" v-on:click="openRegisterModal()">
-							<strong>Sign up</strong>
-						</b-navbar-item>
-						<b-navbar-item class="button is-light" v-on:click="openLoginModal()">Log in</b-navbar-item>
-					</div>
+			<b-navbar-item tag="div">
+				<div class="buttons">
+					<p class="button is-primary is-small" v-on:click="openRegisterModal()">Sign up</p>
+					<p class="button is-light is-small" v-on:click="openLoginModal()">Log in</p>
 				</div>
-			</div>
+			</b-navbar-item>
 		</template>
 
 		<template v-else slot="end">
-			<div class="navbar-item">
-				<div class="field is-grouped is-grouped-multiline">
-					<div class="buttons">
-						<b-navbar-item class="button is-primary is-small">
-							<strong>Account</strong>
-						</b-navbar-item>
-						<b-navbar-item class="button is-danger is-small" v-on:click="signOut()">
-							<strong>Log out</strong>
-						</b-navbar-item>
-					</div>
+			<b-navbar-item tag="div">
+				<div class="buttons">
+					<p class="button is-primary is-small">Account</p>
+					<p class="button is-danger is-small" v-on:click="signOut()">Log out</p>
 				</div>
-			</div>
+			</b-navbar-item>
 		</template>
 	</b-navbar>
 </template>
@@ -94,11 +59,11 @@
 		},
 		computed: {
 			...mapState({
-				isLoggedIn: state => state.userModule.user
+				isLoggedIn: state => state.user.participant
 			})
 		},
 		methods: {
-			...mapActions("userModule", ["logout"]),
+			...mapActions("user", ["logout"]),
 			signOut() {
 				this.logout();
 			},
@@ -123,11 +88,22 @@
 </script>
 
 <style scoped>
+	nav#navbar {
+		margin: 0 0 15px 0;
+		padding: 0 75px;
+		border-bottom: 7.5px double #7957d5;
+		border-top: 5px solid #7957d5;
+	}
+
 	b-navbar-item {
 		text-decoration: none;
 	}
 
 	.navbar-item img {
 		max-height: 4.75rem;
+	}
+
+	.navbar-burger {
+		height: 0!important;
 	}
 </style>

@@ -12,14 +12,14 @@ async function login(email, password) {
     return await axios.post(`${BASE_URL}/api/auth/login`, { email, password }).then(res => {
         if (res.status !== 200) {
             if (res.status === 401) {
-                localStorage.removeItem('user');
+                localStorage.removeItem('participant');
                 return Promise.reject(res.data.message);
             }
             else if (res.status === 400) {
                 return Promise.reject(res.data.message);
             }
         }
-        if (res.data.token) localStorage.setItem('user', JSON.stringify(res.data.token));
+        if (res.data.token) localStorage.setItem('participant', JSON.stringify(res.data.token));
         return Promise.resolve(res.data);
     });
 }
@@ -36,5 +36,5 @@ async function register(user) {
 }
 
 function logout() {
-    localStorage.removeItem('user');
+    localStorage.removeItem('participant');
 }

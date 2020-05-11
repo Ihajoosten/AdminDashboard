@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-vars */
 export function authHeader() {
     // return authorization header with jwt token
-    let user = JSON.parse(localStorage.getItem('user'));
+    let token = JSON.parse(localStorage.getItem('participant'));
+    let config
 
-    if (user && user.token) {
-        return { 'Authorization': 'Bearer ' + user.token };
+    if (token) {
+        return config = { headers: { 'Authorization': 'Bearer ' + token } };
     } else {
-        return {};
+        return config = {};
     }
 }

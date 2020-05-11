@@ -41,29 +41,29 @@
 				});
 			},
 			errorAlert() {
-                this.$buefy.dialog.alert({
-                    title: 'Error: ' + this.alert.title,
-                    message: this.alert.message,
-                    type: 'is-danger',
-                    hasIcon: true,
-                    icon: 'times-circle',
-                    iconPack: 'fa',
-                    ariaRole: 'alertdialog',
-                    ariaModal: true
-                })
+				this.$buefy.dialog.alert({
+					title: this.alert.title,
+					message: this.alert.message,
+					type: "is-danger",
+					hasIcon: true,
+					icon: "exclamation-circle",
+					iconPack: "fa",
+					ariaRole: "alertdialog",
+					ariaModal: true
+				});
 			},
 			successAlert() {
-                this.$buefy.dialog.alert({
-                    title: this.alert.title,
-                    message: this.alert.message,
-                    type: 'is-success',
-                    hasIcon: true,
-                    icon: 'times-circle',
-                    iconPack: 'fa',
-                    ariaRole: 'alertdialog',
-                    ariaModal: true
-                })
-            }
+				this.$buefy.dialog.alert({
+					title: this.alert.title,
+					message: this.alert.message,
+					type: "is-success",
+					hasIcon: true,
+					icon: "check-circle",
+					iconPack: "fas",
+					ariaRole: "alertdialog",
+					ariaModal: true
+				});
+			}
 		},
 		watch: {
 			// eslint-disable-next-line no-unused-vars
@@ -73,7 +73,7 @@
 		},
 		created() {
 			router.beforeEach((to, from, next) => {
-				if (!localStorage.getItem("user")) {
+				if (!localStorage.getItem("participant")) {
 					return this.openLoginModal();
 				}
 				next();
@@ -81,6 +81,3 @@
 		}
 	};
 </script>
-
-<style scoped>
-</style>

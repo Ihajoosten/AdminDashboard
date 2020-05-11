@@ -65,7 +65,8 @@ module.exports = {
 
                 database.executeStatement(query, [newCompany], (err, rows) => {
                     if (err) { res.status(500).json({ message: 'Error: ' + err.toString() }).end(); return; }
-                    database.handleResponse(req, err, rows, res);
+                    if (rows) { res.status(200).json({ message: 'Created new company!' }).end(); return;}
+                    //database.handleResponse(req, err, rows, res);
                 });
                 break;
         }

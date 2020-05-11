@@ -43,10 +43,10 @@
 			};
 		},
 		computed: {
-			...mapState("userModule", ["status"])
+			...mapState("user", ["status"])
 		},
 		methods: {
-			...mapActions("userModule", ["login", "logout"]),
+			...mapActions("user", ["login", "logout"]),
 			closeModal() {
 				this.$parent.close();
 			},
@@ -71,7 +71,7 @@
 			handleSubmit() {
 				this.login({ email: this.email, password: this.password })
 					.then(res => {
-						this.$store.commit("userModule/loginSuccess", res.token);
+						this.$store.commit("user/loginSuccess", res.token);
 						this.$store.dispatch(
 							"alert/success",
 							{ message: res.message, title: "Success" },
@@ -80,7 +80,7 @@
 						this.closeModal();
 					})
 					.catch(err => {
-						this.$store.commit("userModule/loginFailure", err);
+						this.$store.commit("user/loginFailure", err);
 						this.$store.dispatch(
 							"alert/error",
 							{
