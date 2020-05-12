@@ -22,6 +22,14 @@ const actions = {
         const res = await companyService.deleteCompany(company.Id);
         commit('deleteCompany', company);
         return res;
+    },
+    async updateCompany({ commit }, company) {
+        const res = await companyService.updateCompany(company);
+        commit('editCompany', company);
+        return res;
+    },
+    async getCompanyById(id) {
+        return await companyService.getCompanyById(id);
     }
 }
 
@@ -35,6 +43,10 @@ const mutations = {
     deleteCompany(state, payload) {
         const i = state.companies.map(item => item.Id).indexOf(payload.Id);
         state.companies.splice(i, 1);
+    },
+    editCompany(state, payload) {
+        const i = state.companies.map(item => item.Id).indexOf(payload.Id);
+        Vue.set(state.companies, i, payload);
     }
 }
 

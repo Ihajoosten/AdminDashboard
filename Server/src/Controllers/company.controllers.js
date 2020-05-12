@@ -85,11 +85,11 @@ module.exports = {
         const companyId = req.params.id;
         const searchQuery = `SELECT * FROM companies WHERE Id = '${companyId}'`;
         const updateQuery = `UPDATE companies SET 
-            Name = '${body.name}',
-            Branch = '${body.branch}',
-            Department = '${body.department}',
-            Email = '${body.email}',
-            Phone = '${body.phone}'
+            Name = '${body.Name}',
+            Branch = '${body.Branch}',
+            Department = '${body.Department}',
+            Email = '${body.Email}',
+            Phone = '${body.Phone}'
             WHERE Id = '${companyId}'`;
 
         database.executeStatement(searchQuery, [companyId], (error, result) => {

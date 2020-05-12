@@ -6,7 +6,9 @@ import { authHeader } from './authHeader';
 export const companyService = {
     createCompany,
     getAllCompanies,
-    deleteCompany
+    deleteCompany,
+    updateCompany,
+    getCompanyById
 };
 
 async function createCompany(company) {
@@ -40,5 +42,27 @@ async function deleteCompany(id) {
             }
         }
         return Promise.resolve(res.data);
-    }))
+    }));
+}
+
+async function updateCompany(company) {
+    return await axios.put(`${BASE_URL}/api/company/edit/${company.Id}`, company, authHeader()).then((res => {
+        if (res.status !== 200) {
+            if (res.status === (401 || 400 || 500)) {
+                return Promise.reject(res.data.message);
+            }
+        }
+        return Promise.resolve(res.data);
+    }));
+}
+
+async function getCompanyById(id) {
+    return await axios.get(`${BASE_URL}/api/company/${id}`, authHeader()).then((res => {
+        if (res.status !== 200) {
+            if (res.status === (401 || 400 || 500)) {
+                return Promise.reject(res.data.message);
+            }
+        }
+        return Promise.resolve(res.data);
+    }));
 }

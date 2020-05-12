@@ -32,6 +32,7 @@
 <script>
 	import { mapActions } from "vuex";
 	export default {
+		props: ['company'],
 		data() {
 			return {
 				name: "",

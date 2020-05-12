@@ -11,7 +11,6 @@
 		<section>
 			<section>
 				<b-field grouped group-multiline>
-      
 					<button class="button is-light control is-flex" v-on:click="openCreateModal()">
 						<strong>+ New</strong>
 					</button>
@@ -34,6 +33,7 @@
 				detail-key="Id"
 				@details-open="(row, index) => $buefy.toast.open(`Expanded ${row.Name}`)"
 				:show-detail-icon="showDetailIcon"
+				custom-row-key="Id"
 				aria-next-label="Next page"
 				aria-previous-label="Previous page"
 				aria-page-label="Page"
@@ -76,7 +76,12 @@
 
 					<b-table-column>
 						<div class="buttons">
-							<b-button type="is-warning" size="is-small" icon-left="pen" v-on:click="openEditModal()"></b-button>
+							<b-button
+								type="is-warning"
+								size="is-small"
+								icon-left="pen"
+								v-on:click="openEditModal(props.row)"
+							></b-button>
 							<b-button
 								type="is-danger"
 								size="is-small"
@@ -144,12 +149,14 @@
 					props: {}
 				});
 			},
-			openEditModal() {
+			openEditModal(row) {
 				this.$buefy.modal.open({
 					parent: this,
 					component: UpdateCompanyModal,
 					hasModalCard: true,
-					props: {}
+					props: {
+						companyObject: row
+					}
 				});
 			},
 			handleDelete(obj) {
