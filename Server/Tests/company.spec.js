@@ -53,8 +53,8 @@ describe('Create company tests', () => {
 
         const result = await requester.post('/api/company/create').set('Authorization', 'Bearer ' + user.body.token).send(body);
         expect(result).to.have.status(200);
-        expect(result.body).to.have.property('result');
-        expect(result.body).to.have.property('token');
+        expect(result.body).to.have.property('message');
+        expect(result.body).to.have.property('object');
     });
 
     it('Testing create new company - invalid token', async () => {

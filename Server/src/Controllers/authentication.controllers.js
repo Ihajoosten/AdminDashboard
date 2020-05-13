@@ -44,7 +44,7 @@ module.exports = {
     next();
   },
   registerUser: async (req, res) => {
-    const body = req.body.user;
+    const body = await req.body;
 
     // if somethng is undefined return given 400 status
     switch (body) {

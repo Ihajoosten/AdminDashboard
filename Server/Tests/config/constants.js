@@ -11,7 +11,7 @@ module.exports = {
         return (`INSERT INTO companies VALUES ('247','Adidas', 'Sales', 'Breda', 'info@adidas.nl', '0647921547')`);
     },
     createProductQuery: () => {
-        return (`INSERT INTO products VALUES ('247', 'Bluetooth mouse', 'Nice wireless mouse', '24,95', 'Logitech', '${Date.now.toString()}')`)
+        return (`INSERT INTO products VALUES ('247', 'Bluetooth mouse', 'Nice wireless mouse', '${24,9}', 'Logitech', '${Date.now.toString()}')`)
     },
     deleteProductQuery: () => {
         return ('DELETE FROM products');

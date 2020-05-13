@@ -51,7 +51,7 @@ describe('Login User tests', () => {
 
         const result = await requester.post('/api/auth/login').send(requestBody);
 
-        expect(result).to.have.status(404);
+        expect(result).to.have.status(401);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('message');
         expect(result.body.message).equal('Email does not exist!');
@@ -65,7 +65,7 @@ describe('Login User tests', () => {
 
         const result = await requester.post('/api/auth/login').send(requestBody);
 
-        expect(result).to.have.status(404);
+        expect(result).to.have.status(401);
         expect(result.body).to.not.have.property('token');
         expect(result.body).to.have.property('message');
         expect(result.body.message).equal('Invalid password!');
