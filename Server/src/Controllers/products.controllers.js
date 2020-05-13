@@ -65,7 +65,17 @@ module.exports = {
 
                 database.executeStatement(query, [newProduct], (err, rows) => {
                     if (err) { res.status(500).json({ message: 'Error: ' + err.toString() }).end(); return; }
-                    database.handleResponse(req, err, rows, res);
+                    if (rows) {
+                        let obj = {
+                            Id: rows.insertId,
+                            Name: newProduct.name,
+                            Description: newProduct.description,
+                            Price: newProduct.price,
+                            Brand: newProduct.brand,
+                            DateReleased: newProduct.dateReleased
+                        }
+                        res.status(200).json({ message: 'Created new product!', object: obj }).end(); return;
+                    }
                 });
                 break;
         }
