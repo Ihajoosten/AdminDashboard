@@ -5,7 +5,7 @@ const logger = require('../Configs/config').logger;
 const Company = require('../Models/company.models');
 
 module.exports = {
-    getCompany: (req, res) => {
+    getCompany: async (req, res) => {
         const companyId = req.params.companyId
         const query = `SELECT * FROM companies WHERE Id = '${companyId}'`;
 

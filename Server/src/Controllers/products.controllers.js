@@ -27,7 +27,6 @@ module.exports = {
     addProduct: (req, res) => {
         let newProduct = new Product();
         const body = req.body;
-
         switch (body) {
             case !body:
                 res.status(400).json({ message: 'Undefinded body' }).end();
@@ -41,8 +40,8 @@ module.exports = {
             case (!body.price || body.price === '') && body:
                 res.status(400).json({ message: 'Undefined price' }).end();
                 break;
-            case (!body.brand || body.brand === '') && body:
-                res.status(400).json({ message: 'Undefined brand' }).end();
+            case (!body.companyId || body.companyId === '') && body:
+                res.status(400).json({ message: 'Undefined companyId' }).end();
                 break;
             case (!body.dateReleased || body.dateReleased === '') && body:
                 res.status(400).json({ message: 'Undefined dateReleased' }).end();
@@ -52,14 +51,14 @@ module.exports = {
                 newProduct.name = body.name;
                 newProduct.description = body.description;
                 newProduct.price = body.price;
-                newProduct.brand = body.brand;
+                newProduct.companyId = body.companyId;
                 newProduct.dateReleased = body.dateReleased;
 
                 const query = `INSERT INTO products VALUES('',
                     '${newProduct.name}',
                     '${newProduct.description}',
                     '${newProduct.price}',
-                    '${newProduct.brand}',
+                    '${newProduct.companyId}',
                     '${newProduct.dateReleased}'            
                 )`;
 
@@ -71,7 +70,7 @@ module.exports = {
                             Name: newProduct.name,
                             Description: newProduct.description,
                             Price: newProduct.price,
-                            Brand: newProduct.brand,
+                            CompanyId: newProduct.companyId,
                             DateReleased: newProduct.dateReleased
                         }
                         res.status(200).json({ message: 'Created new product!', object: obj }).end(); return;
@@ -88,7 +87,7 @@ module.exports = {
             Name = '${body.name}',
             Description = '${body.description}',
             Price = '${body.price}',
-            Brand = '${body.brand}',
+            CompanyId = '${body.companyId}',
             DateReleased = '${body.dateRelease}'
             WHERE Id = '${productId}'`;
 

@@ -28,8 +28,9 @@ const actions = {
         commit('editCompany', company);
         return res;
     },
-    async getCompanyById(id) {
+    async getCompanyById(_, id) {
         return await companyService.getCompanyById(id);
+        // return Promise.resolve(res);
     }
 }
 

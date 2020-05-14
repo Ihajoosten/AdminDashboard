@@ -34,7 +34,7 @@
 </template>
 
 <script>
-/* eslint-disable no-unused-vars */
+	/* eslint-disable no-unused-vars */
 	import { mapActions } from "vuex";
 	export default {
 		props: ["companyObject"],

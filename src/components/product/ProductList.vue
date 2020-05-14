@@ -67,8 +67,10 @@
 
 					<b-table-column field="Price" label="Price" sortable searchable>{{ props.row.Price }}</b-table-column>
 
-					<b-table-column field="Brand" label="Brand" sortable searchable>
-						<span class="tag is-success">{{ props.row.Brand}}</span>
+					<b-table-column field="Company" label="Company" sortable searchable centered>
+						<span class="tag is-success">
+							{{  companies[companies.map(item => item.Id).indexOf(props.row.CompanyId)].Name }}
+						</span>
 					</b-table-column>
 
 					<b-table-column field="DateReleased" label="DateReleased" searchable>
@@ -134,11 +136,17 @@
 		},
 		computed: {
 			...mapState({
-				products: state => state.product.products
+				products: state => state.product.products,
+				companies: state => state.company.companies
 			})
 		},
 		methods: {
-			...mapActions("product", ["getProducts", "deleteProduct"]),
+			...mapActions({
+				getProducts: "product/getProducts",
+				deleteProduct: "product/deleteProduct",
+				getCompanyById: "company/getCompanyById",
+				getCompanies: "company/getCompanies"
+			}),
 			toggle(row) {
 				this.$refs.table.toggleDetails(row);
 			},
@@ -166,6 +174,7 @@
 		},
 		created() {
 			this.getProducts();
+			this.getCompanies();
 		}
 	};
 </script>

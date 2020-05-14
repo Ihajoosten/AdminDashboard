@@ -63,6 +63,7 @@ async function getCompanyById(id) {
                 return Promise.reject(res.data.message);
             }
         }
-        return Promise.resolve(res.data);
+        
+        return Promise.resolve(res.data.result[0].Name);
     }));
 }

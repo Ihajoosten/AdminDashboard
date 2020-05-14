@@ -11,16 +11,28 @@
 					<b-input v-model="description" type="text" placeholder="Description"></b-input>
 				</b-field>
 
-				<b-field label="Price">
-					<b-input v-model="price" type="text" placeholder="Price"></b-input>
+				<b-field label="Date released">
+					<b-datepicker
+						v-model="dateReleased"
+						:show-week-number="true"
+						placeholder="Click to select..."
+						icon="calendar-today"
+						trap-focus
+					></b-datepicker>
 				</b-field>
 
 				<b-field label="Brand">
-					<b-input v-model="brand" type="text" placeholder="Brand"></b-input>
+					<b-select v-model="companyId" placeholder="Select a company" icon="building" icon-pack="far">
+						<option
+							v-for="option in companies"
+							:value="option.Id"
+							:key="option.Id"
+						>{{ option.Id + ": " + option.Name }}</option>
+					</b-select>
 				</b-field>
 
-				<b-field label="DateReleased">
-					<b-input v-model="dateReleased" type="date" placeholder="DateReleased"></b-input>
+				<b-field label="Price">
+					<b-numberinput step="0.5" v-model="price" placeholder="Price"></b-numberinput>
 				</b-field>
 
 				<button class="button is-dark is-fullwidth" v-on:click="handleSubmit()">Create</button>
@@ -38,8 +50,9 @@
 				name: "",
 				description: "",
 				price: "",
-				brand: "",
-				dateReleased: ""
+				companyId: "",
+				dateReleased: "",
+				companies: []
 			};
 		},
 		methods: {
@@ -49,7 +62,7 @@
 					name: this.name,
 					description: this.description,
 					price: this.price,
-					brand: this.brand,
+					companyId: this.companyId,
 					dateReleased: this.dateReleased
 				};
 				this.newProduct(product)
@@ -69,6 +82,11 @@
 						);
 					});
 			}
+		},
+		created() {
+			this.$store.dispatch("company/getCompanies").then(res => {
+				this.companies = res;
+			});
 		}
 	};
 </script>
